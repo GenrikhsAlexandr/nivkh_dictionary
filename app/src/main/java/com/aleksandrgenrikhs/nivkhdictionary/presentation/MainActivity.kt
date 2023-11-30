@@ -13,7 +13,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -21,7 +20,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         Handler(Looper.getMainLooper()).postDelayed({
             supportFragmentManager.commit {
-                add(R.id.container, MainFragment.newInstance())}
+                add(R.id.container, MainFragment.newInstance())
+            }
             binding.lottieAnimationView.isVisible = false
         }, 3000)
     }
