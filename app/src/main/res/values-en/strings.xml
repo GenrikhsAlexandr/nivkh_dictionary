@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Nivkh Dictionary</string>
+    <string name="word">Refresh the word database</string>
+    <string name="language">language</string>
+    <string name="ru_language">Russian</string>
+    <string name="nv_language">Nivkh</string>
+    <string name="en_language">English</string>
+    <string name="about">About"</string>
+    <string name="search">Search</string>
+    <string name="favorites">Favorites</string>
+    <string name="home">Home</string>
+    <string name="history">History</string>
+    <string name="about_text">\t\t
+        Dear friends!
+        \n\n
+\t\t
+Before you is a Russian-English-Nivkh audio dictionary. The purpose of creating this dictionary is to preserve (reproduce) the phonetic form of the Eastern Sakhalin dialect of the Nivkh language. Nivkh words were voiced by Vladimir Mikhailovich Sangi, a Nivkh writer and laureate of the State Prize of Russia in literature, a member of the International League for the Protection of Human Rights and Freedoms under the Economic and Social Council of the United Nations. The correct pronunciation of words in the Nivkh language will remain the standard for correct language pronunciation for many generations of Nivkhs.
+        \n\n
+\t\t
+We hope that the creation of a speaking Nivkh dictionary will assist the Nivkh people in preserving and developing their language, as well as educators in organizing classes in the Nivkh language in preschool institutions and general education schools.        \n\n
+\t\t
+The audio dictionary can be used by everyone: those who wish to learn the Nivkh language, linguists and phonetics researchers, as well as foreign specialists.
+        \n\n
+иях и общеобразовательных школах.\n\n
+\t\tАудиословарём смогут пользоваться все: желающие освоить нивхский язык, учёные, занимающиеся лингвистическими и фонетическими изысканиями, иностранные специалисты.\n\n
+</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
