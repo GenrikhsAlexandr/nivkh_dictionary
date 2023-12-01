@@ -1,13 +1,31 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentRussianBinding
+import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordAdapter
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
+import com.genrikhsaleksandr.savefeature.di.TabsViewModelFactory
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class RussianFragment : Fragment() {
+
+    @Inject
+    lateinit var viewModelFactory: TabsViewModelFactory
+
+    private val viewModel: TabsViewModel by viewModels { viewModelFactory }
+
 
     companion object {
         fun newInstance() = RussianFragment()
@@ -16,6 +34,19 @@ class RussianFragment : Fragment() {
     private var _binding: FragmentRussianBinding? = null
     private val binding: FragmentRussianBinding get() = _binding!!
 
+    private val adapter: WordAdapter = WordAdapter(
+        onWordClick = { word ->
+            WordDetailsBottomSheet.show(
+                word, fragmentManager = childFragmentManager
+            )
+        }
+    )
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as ComponentProvider).provideComponent()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,6 +54,36 @@ class RussianFragment : Fragment() {
     ): View {
         _binding = FragmentRussianBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.rvWord.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        )
+        binding.rvWord.adapter = adapter
+        lifecycleScope.launch {
+            viewModel.words.collect { words ->
+                binding.progressBar.isVisible = words.isEmpty()
+                binding.rvWord.isVisible = words.isNotEmpty()
+                adapter.submitData(words)
+            }
+        }
+        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
+        swipeRefresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                viewModel.words.collect { words ->
+                    adapter.submitData(words)
+                }
+            }
+            swipeRefresh.isRefreshing = false
+        }
+        getArticlesSourceId()
+    }
+
+    private fun getArticlesSourceId() {
+        val locale = "ru"
+        viewModel.setArticlesId(locale)
     }
 
     override fun onDestroyView() {
