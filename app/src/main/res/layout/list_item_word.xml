@@ -4,6 +4,6 @@
     android:id="@+id/listItemWord"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    android:layout_margin="16dp"
+    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
     tools:text="Word" />

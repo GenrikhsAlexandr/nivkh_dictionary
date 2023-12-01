@@ -27,6 +27,7 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         activity?.enableEdgeToEdge()
         super.onViewCreated(view, savedInstanceState)

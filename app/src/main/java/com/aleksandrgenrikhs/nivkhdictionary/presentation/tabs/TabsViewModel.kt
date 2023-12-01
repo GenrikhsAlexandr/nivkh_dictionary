@@ -1,4 +1,4 @@
-package com.aleksandrgenrikhs.nivkhdictionary.presentation
+package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,8 +12,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Locale
+import javax.inject.Inject
 
-class MainViewModel(
+class TabsViewModel @Inject constructor(
     private val interactor: DictionaryInteractor
 ) : ViewModel() {
 

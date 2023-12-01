@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20-RC"
 }
 
@@ -77,4 +78,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+
+    kapt("com.google.dagger:dagger-compiler:2.46.1")
+    implementation("com.google.dagger:dagger:2.46.1")
 }
