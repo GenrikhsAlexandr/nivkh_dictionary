@@ -10,16 +10,15 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import javax.inject.Inject
 
-class WordRepositoryImpl(
+class WordRepositoryImpl @Inject constructor(
+    private val mapperWord: MapperWord
 ) : WordRepository {
 
     companion object {
         private const val BASE_URL = "http://bibl-nogl-dictionary.ru"
     }
-
-    private val mapperWord: MapperWord = MapperWord()
-
 
     private val json = Json { ignoreUnknownKeys = true }
 

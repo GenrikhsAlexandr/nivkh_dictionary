@@ -3,8 +3,9 @@ package com.aleksandrgenrikhs.nivkhdictionary.data
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.ncbs.dictionary.domain.LocaleData
 import java.util.Locale
+import javax.inject.Inject
 
-class MapperWord {
+class MapperWord @Inject constructor() {
     fun mapToWord(wordDto: WordDto): Word? {
         return Word(
             id = wordDto.id ?: return null,

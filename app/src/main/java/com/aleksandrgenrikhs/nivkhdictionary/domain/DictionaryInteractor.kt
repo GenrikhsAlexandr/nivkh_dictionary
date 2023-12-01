@@ -1,8 +1,9 @@
 package com.aleksandrgenrikhs.nivkhdictionary.domain
 
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class DictionaryInteractor(
+class DictionaryInteractor @Inject constructor(
     private val repository: WordRepository
 ) {
     fun getFavoritesWords(): Flow<List<Word>> = repository.getFavoritesWords()

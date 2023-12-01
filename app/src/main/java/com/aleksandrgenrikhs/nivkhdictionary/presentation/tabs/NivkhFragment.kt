@@ -1,5 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +11,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
+import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordAdapter
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
+import com.genrikhsaleksandr.savefeature.di.TabsViewModelFactory
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class NivkhFragment : Fragment() {
 
-    private val viewModel: TabsViewModel by viewModels()
+    @Inject
+    lateinit var viewModelFactory: TabsViewModelFactory
+
+    private val viewModel: TabsViewModel by viewModels { viewModelFactory }
 
 
     companion object {
@@ -33,6 +40,12 @@ class NivkhFragment : Fragment() {
             )
         }
     )
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as ComponentProvider).provideComponent()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
