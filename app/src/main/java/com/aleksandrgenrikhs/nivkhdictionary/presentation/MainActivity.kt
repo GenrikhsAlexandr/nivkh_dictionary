@@ -1,10 +1,10 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         Handler(Looper.getMainLooper()).postDelayed({
             supportFragmentManager.commit {
-                add(R.id.container, MainFragment.newInstance())
+                replace(R.id.container, MainFragment.newInstance())
             }
             binding.lottieAnimationView.isVisible = false
         }, 3000)

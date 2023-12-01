@@ -1,10 +1,10 @@
-package com.aleksandrgenrikhs.nivkhdictionary.presentation
+package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aleksandrgenrikhs.nivkhdictionary.domain.DictionaryInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.DictinaryInteractorFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,9 +13,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class MainViewModel(
-    private val interactor: DictionaryInteractor
+class TabsViewModel(
 ) : ViewModel() {
+
+    private val interactor = DictinaryInteractorFactory().provideInteractor()
 
     private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
 

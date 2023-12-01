@@ -8,9 +8,6 @@ import androidx.fragment.app.Fragment
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentAboutBinding
 
 class AboutFragment : Fragment() {
-    companion object {
-        fun newInstance() = AboutFragment()
-    }
 
     private var _binding: FragmentAboutBinding? = null
     private val binding: FragmentAboutBinding get() = _binding!!
