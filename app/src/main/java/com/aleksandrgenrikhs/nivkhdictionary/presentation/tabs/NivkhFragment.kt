@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordAdapter
@@ -60,10 +61,7 @@ class NivkhFragment : Fragment() {
         binding.rvWord.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
-
         binding.rvWord.adapter = adapter
-
-
         lifecycleScope.launch {
             viewModel.words.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
@@ -71,6 +69,21 @@ class NivkhFragment : Fragment() {
                 adapter.submitData(words)
             }
         }
+        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
+        swipeRefresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                viewModel.words.collect { words ->
+                    adapter.submitData(words)
+                }
+            }
+            swipeRefresh.isRefreshing = false
+        }
+        getArticlesSourceId()
+    }
+
+    private fun getArticlesSourceId() {
+        val locale = "nv"
+        viewModel.setArticlesId(locale)
     }
 
     override fun onDestroyView() {

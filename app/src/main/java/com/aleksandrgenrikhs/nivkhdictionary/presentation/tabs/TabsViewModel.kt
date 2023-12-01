@@ -29,7 +29,13 @@ class TabsViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale("nv"))
+    private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
+
+    fun setArticlesId(articlesSourceId: String) {
+        viewModelScope.launch {
+            currentLocale.value = Locale(articlesSourceId)
+        }
+    }
 
     init {
         viewModelScope.launch {

@@ -7,11 +7,11 @@
         android:orderInCategory="1"
         android:title="@string/search"
         app:showAsAction="ifRoom" />
-    <item
+<!--    <item
         android:id="@+id/word"
         android:orderInCategory="2"
         android:icon="@drawable/ic_update"
         android:title="@string/word"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
 </menu>
