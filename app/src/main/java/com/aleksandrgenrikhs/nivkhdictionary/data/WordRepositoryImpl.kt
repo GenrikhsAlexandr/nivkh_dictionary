@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 import javax.inject.Inject
 
 class WordRepositoryImpl @Inject constructor(
-    private val mapperWord: MapperWord
+    private val wordMapper: WordMapper
 ) : WordRepository {
 
     companion object {
@@ -44,13 +44,10 @@ class WordRepositoryImpl @Inject constructor(
 
     override suspend fun getWords(): List<Word> {
         return service.getWords().mapNotNull { WordDto ->
-            mapperWord.mapToWord(WordDto)
+            wordMapper.mapToWord(WordDto)
         }
     }
 
-    override fun getWordsCurrentLocale(locale: String): Flow<List<Word>> {
-        TODO("Not yet implemented")
-    }
 
     override fun getFavoritesWords(): Flow<List<Word>> {
         TODO("Not yet implemented")

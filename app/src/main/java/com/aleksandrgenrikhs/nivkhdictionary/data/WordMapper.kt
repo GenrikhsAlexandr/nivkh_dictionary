@@ -5,7 +5,7 @@ import com.ncbs.dictionary.domain.LocaleData
 import java.util.Locale
 import javax.inject.Inject
 
-class MapperWord @Inject constructor() {
+class WordMapper @Inject constructor() {
     fun mapToWord(wordDto: WordDto): Word? {
         return Word(
             id = wordDto.id ?: return null,

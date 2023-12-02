@@ -26,6 +26,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
+            app:indicatorColor="@color/ic_launcher_background"
             android:indeterminate="true">
 
         </com.google.android.material.progressindicator.CircularProgressIndicator>

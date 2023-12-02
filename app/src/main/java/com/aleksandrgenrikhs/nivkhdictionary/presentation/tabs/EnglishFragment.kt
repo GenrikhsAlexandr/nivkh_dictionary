@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentEnglishBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordAdapter
@@ -67,6 +68,7 @@ class EnglishFragment : Fragment() {
             }
         }
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
+        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background);
         swipeRefresh.setOnRefreshListener {
             lifecycleScope.launch {
                 viewModel.words.collect { words ->
@@ -80,7 +82,7 @@ class EnglishFragment : Fragment() {
 
     private fun getArticlesSourceId() {
         val locale = "en"
-        viewModel.setArticlesId(locale)
+        viewModel.setLocale(locale)
     }
 
     override fun onDestroyView() {
