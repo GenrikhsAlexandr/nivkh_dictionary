@@ -1,9 +1,11 @@
 package com.aleksandrgenrikhs.nivkhdictionary.data
 
+import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,7 +15,8 @@ import retrofit2.Retrofit
 import javax.inject.Inject
 
 class WordRepositoryImpl @Inject constructor(
-    private val wordMapper: WordMapper
+    private val wordDao: WordDao,
+    private val wordMapper: WordMapper,
 ) : WordRepository {
 
     companion object {
@@ -48,17 +51,22 @@ class WordRepositoryImpl @Inject constructor(
         }
     }
 
-
     override fun getFavoritesWords(): Flow<List<Word>> {
-        TODO("Not yet implemented")
+        return wordDao.getWordsFromDb().map { listWordDBModel ->
+            listWordDBModel.map {
+                wordMapper.mapWordDbModelToWord(it)
+            }
+        }
     }
 
-    override suspend fun saveFavoriteWord(word: Word): Word {
-        TODO("Not yet implemented")
+    override suspend fun saveFavoriteWord(word: Word) {
+        val wordDbModel = wordMapper.mapWordToWordDbModel(word)
+        wordDao.insertWord(wordDbModel)
     }
 
     override suspend fun deleteFavoriteWord(word: Word) {
-        TODO("Not yet implemented")
+        val wordDbModel = wordMapper.mapWordToWordDbModel(word)
+        wordDao.deleteWord(wordDbModel)
     }
 
 
@@ -66,5 +74,8 @@ class WordRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-
+    override suspend fun isFavorite(word: Word): Boolean {
+        val wordDbModel = wordDao.getWordById(word.id)
+        return wordDbModel != null
+    }
 }

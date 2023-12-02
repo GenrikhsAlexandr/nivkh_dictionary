@@ -7,7 +7,7 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
-class TabsViewModelFactory @Inject
+class MainViewModelFactory @Inject
 constructor(
     private val viewModelProviders: Map<Class<out ViewModel>,
             @JvmSuppressWildcards Provider<ViewModel>>

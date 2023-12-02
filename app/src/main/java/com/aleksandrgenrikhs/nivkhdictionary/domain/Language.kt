@@ -1,4 +1,4 @@
-package com.ncbs.dictionary.domain
+package com.aleksandrgenrikhs.nivkhdictionary.domain
 
 
 import java.util.Locale
