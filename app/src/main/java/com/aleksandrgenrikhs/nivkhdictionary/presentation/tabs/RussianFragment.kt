@@ -14,9 +14,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentRussianBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
+import com.aleksandrgenrikhs.nivkhdictionary.di.TabsViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordAdapter
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
-import com.genrikhsaleksandr.savefeature.di.TabsViewModelFactory
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -63,7 +63,7 @@ class RussianFragment : Fragment() {
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.rvWord.adapter = adapter
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
@@ -73,7 +73,7 @@ class RussianFragment : Fragment() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background);
         swipeRefresh.setOnRefreshListener {
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.words.collect { words ->
                     adapter.submitData(words)
                 }

@@ -1,11 +1,14 @@
 package com.aleksandrgenrikhs.nivkhdictionary.di
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordMapper
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
+import com.aleksandrgenrikhs.nivkhdictionary.data.database.AppDatabase
+import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.TabsViewModel
-import com.genrikhsaleksandr.savefeature.di.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -20,16 +23,33 @@ interface DataModule {
         @Provides
         @Singleton
         fun provideWordRepository(
-            wordMapper: WordMapper
+            wordMapper: WordMapper,
+            wordDao: WordDao,
         ): WordRepository {
             return WordRepositoryImpl(
-                wordMapper
+                wordDao,
+                wordMapper,
             )
         }
+
+        @Provides
+        @Singleton
+        fun provideWordDao(
+            application: Application
+        ): WordDao {
+            return AppDatabase.getInstance(application).wordsRequestDao()
+        }
     }
+
 
     @Binds
     @IntoMap
     @ViewModelKey(TabsViewModel::class)
     fun tabsViewModel(viewModel: TabsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    fun mainViewModel(viewModel: MainViewModel): ViewModel
+
 }

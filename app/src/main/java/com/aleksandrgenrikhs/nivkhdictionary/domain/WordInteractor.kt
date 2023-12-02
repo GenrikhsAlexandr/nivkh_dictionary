@@ -8,11 +8,14 @@ class WordInteractor @Inject constructor(
 ) {
     fun getFavoritesWords(): Flow<List<Word>> = repository.getFavoritesWords()
 
-    suspend fun saveFavoriteWord(word: Word): Word = repository.saveFavoriteWord(word)
+    suspend fun saveFavoriteWord(word: Word) = repository.saveFavoriteWord(word)
 
     suspend fun deleteFavoriteWord(word: Word) = repository.deleteFavoriteWord(word)
 
     suspend fun getWords(): List<Word> = repository.getWords()
 
     suspend fun updateWords(): List<Word> = repository.updateWords()
+
+    suspend fun isFavorite(word: Word) = repository.isFavorite(word)
+
 }

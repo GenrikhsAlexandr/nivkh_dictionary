@@ -1,4 +1,4 @@
-package com.genrikhsaleksandr.savefeature.di
+package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey
