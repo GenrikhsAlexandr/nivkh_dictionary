@@ -2,8 +2,8 @@ package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aleksandrgenrikhs.nivkhdictionary.domain.DictionaryInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
+import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,25 +15,27 @@ import java.util.Locale
 import javax.inject.Inject
 
 class TabsViewModel @Inject constructor(
-    private val interactor: DictionaryInteractor
+    private val interactor: WordInteractor
 ) : ViewModel() {
 
     private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
 
     val words: StateFlow<List<WordListItem>> = _words.map { words ->
-        words.mapNotNull { word ->
-            WordListItem(
-                word = word,
-                title = word.locales[currentLocale.value.language]?.value ?: return@mapNotNull null
-            )
-        }
+        words
+            .mapNotNull { word ->
+                WordListItem(
+                    word = word,
+                    title = word.locales[currentLocale.value.language]?.value
+                        ?: return@mapNotNull null
+                )
+            }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
 
-    fun setArticlesId(articlesSourceId: String) {
+    fun setLocale(locale: String) {
         viewModelScope.launch {
-            currentLocale.value = Locale(articlesSourceId)
+            currentLocale.value = Locale(locale)
         }
     }
 

@@ -3,13 +3,10 @@ package com.aleksandrgenrikhs.nivkhdictionary.domain
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class DictionaryInteractor @Inject constructor(
+class WordInteractor @Inject constructor(
     private val repository: WordRepository
 ) {
     fun getFavoritesWords(): Flow<List<Word>> = repository.getFavoritesWords()
-
-    fun getWordsCurrentLocale(locale: String): Flow<List<Word>> = repository
-        .getWordsCurrentLocale(locale)
 
     suspend fun saveFavoriteWord(word: Word): Word = repository.saveFavoriteWord(word)
 

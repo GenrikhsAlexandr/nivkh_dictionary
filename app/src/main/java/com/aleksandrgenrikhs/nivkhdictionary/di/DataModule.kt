@@ -1,7 +1,7 @@
 package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import androidx.lifecycle.ViewModel
-import com.aleksandrgenrikhs.nivkhdictionary.data.MapperWord
+import com.aleksandrgenrikhs.nivkhdictionary.data.WordMapper
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.TabsViewModel
@@ -20,10 +20,10 @@ interface DataModule {
         @Provides
         @Singleton
         fun provideWordRepository(
-            mapperWord: MapperWord
+            wordMapper: WordMapper
         ): WordRepository {
             return WordRepositoryImpl(
-                mapperWord
+                wordMapper
             )
         }
     }

@@ -25,6 +25,7 @@
             android:id="@+id/progressBar"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            app:indicatorColor="@color/ic_launcher_background"
             android:layout_gravity="center"
             android:indeterminate="true">
 

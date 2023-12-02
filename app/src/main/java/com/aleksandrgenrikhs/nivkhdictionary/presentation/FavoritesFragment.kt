@@ -9,6 +9,10 @@ import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentFavoritesBindin
 
 class FavoritesFragment : Fragment() {
 
+    companion object {
+        fun newInstance() = FavoritesFragment()
+    }
+
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding: FragmentFavoritesBinding get() = _binding!!
