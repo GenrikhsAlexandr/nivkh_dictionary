@@ -30,4 +30,6 @@ The audio dictionary can be used by everyone: those who wish to learn the Nivkh 
 
     <string name="Russia">RU</string>
     <string name="English">EN</string>
+    <string name="empty">Empty</string>
+
 </resources>

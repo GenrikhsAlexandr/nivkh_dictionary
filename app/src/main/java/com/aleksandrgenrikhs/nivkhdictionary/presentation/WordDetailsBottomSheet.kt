@@ -15,6 +15,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -66,6 +67,8 @@ class WordDetailsBottomSheet(
         binding.btSaved.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.onFavoriteButtonClicked()
+                delay(100)
+                dismiss()
             }
         }
         getWord(word)
@@ -98,7 +101,6 @@ class WordDetailsBottomSheet(
                 }
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.toastMessage.collect { message ->
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
