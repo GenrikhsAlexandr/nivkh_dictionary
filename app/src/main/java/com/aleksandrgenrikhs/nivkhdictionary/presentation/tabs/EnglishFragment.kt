@@ -15,8 +15,8 @@ import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentEnglishBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.TabsViewModelFactory
-import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordAdapter
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,15 +64,15 @@ class EnglishFragment : Fragment() {
             viewModel.words.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
-                adapter.submitData(words)
+                adapter.submitList(words)
             }
         }
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
-        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background);
+        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.words.collect { words ->
-                    adapter.submitData(words)
+                    adapter.submitList(words)
                 }
             }
             swipeRefresh.isRefreshing = false

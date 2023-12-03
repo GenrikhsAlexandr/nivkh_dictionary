@@ -75,7 +75,6 @@ class WordDetailsBottomSheet(
 
     private fun getWord(word: Word) {
         viewModel.setWord(word)
-
     }
 
     private fun subscribe() {

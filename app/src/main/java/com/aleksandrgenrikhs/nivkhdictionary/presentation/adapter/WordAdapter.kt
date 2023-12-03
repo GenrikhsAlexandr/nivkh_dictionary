@@ -1,7 +1,8 @@
-package com.aleksandrgenrikhs.nivkhdictionary.presentation
+package com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.ListItemWordBinding
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
@@ -9,14 +10,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 
 class WordAdapter(
     val onWordClick: (Word) -> Unit
-) : RecyclerView.Adapter<WordAdapter.WordViewHolder>() {
-
-    private lateinit var list: List<WordListItem>
-
-    fun submitData(list: List<WordListItem>) {
-        this.list = list
-        notifyDataSetChanged()
-    }
+) : ListAdapter<WordListItem, WordAdapter.WordViewHolder>(WordDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
         return WordViewHolder(
@@ -29,11 +23,11 @@ class WordAdapter(
     }
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int {
-        return list.size
+    override fun getItemViewType(position: Int): Int {
+        return getItem(position).viewType
     }
 
     inner class WordViewHolder(private val binding: ListItemWordBinding) :
