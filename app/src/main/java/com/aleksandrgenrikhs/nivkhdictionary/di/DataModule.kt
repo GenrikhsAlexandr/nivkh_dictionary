@@ -8,7 +8,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.data.database.AppDatabase
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
-import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.TabsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -41,15 +40,8 @@ interface DataModule {
         }
     }
 
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(TabsViewModel::class)
-    fun tabsViewModel(viewModel: TabsViewModel): ViewModel
-
     @Binds
     @IntoMap
     @ViewModelKey(MainViewModel::class)
     fun mainViewModel(viewModel: MainViewModel): ViewModel
-
 }

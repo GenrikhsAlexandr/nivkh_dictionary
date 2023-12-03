@@ -20,4 +20,5 @@
 
     <string name="Russia">RU</string>
     <string name="English">EN</string>
+    <string name="empty">Список пуст</string>
 </resources>

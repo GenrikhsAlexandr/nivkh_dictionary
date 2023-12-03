@@ -2,6 +2,7 @@ package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.FavoritesFragment
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.EnglishFragment
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.NivkhFragment
@@ -23,6 +24,8 @@ interface ApplicationComponent {
     fun inject(bottomSheet: WordDetailsBottomSheet)
 
     fun inject(englishFragment: EnglishFragment)
+
+    fun inject(favoritesFragment: FavoritesFragment)
 
     fun getWordRepository(): WordRepository
 

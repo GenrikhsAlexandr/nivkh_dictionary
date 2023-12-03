@@ -14,7 +14,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentEnglishBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
-import com.aleksandrgenrikhs.nivkhdictionary.di.TabsViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
 import kotlinx.coroutines.launch
@@ -23,8 +24,8 @@ import javax.inject.Inject
 class EnglishFragment : Fragment() {
 
     @Inject
-    lateinit var viewModelFactory: TabsViewModelFactory
-    private val viewModel: TabsViewModel by viewModels { viewModelFactory }
+    lateinit var viewModelFactory: MainViewModelFactory
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
 
     companion object {
         fun newInstance() = EnglishFragment()
@@ -51,6 +52,9 @@ class EnglishFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEnglishBinding.inflate(inflater, container, false)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getAllWords()
+        }
         return binding.root
     }
 
@@ -77,10 +81,10 @@ class EnglishFragment : Fragment() {
             }
             swipeRefresh.isRefreshing = false
         }
-        getArticlesSourceId()
+        getLocale()
     }
 
-    private fun getArticlesSourceId() {
+    private fun getLocale() {
         val locale = "en"
         viewModel.setLocale(locale)
     }
