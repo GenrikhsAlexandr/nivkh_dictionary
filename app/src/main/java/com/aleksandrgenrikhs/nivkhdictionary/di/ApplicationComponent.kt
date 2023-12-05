@@ -1,8 +1,8 @@
 package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
-import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.FavoritesFragment
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainFragment
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.EnglishFragment
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.NivkhFragment
@@ -18,6 +18,8 @@ import javax.inject.Singleton
 @Singleton
 interface ApplicationComponent {
 
+    fun inject(mainFragment: MainFragment)
+
     fun inject(nivkhFragment: NivkhFragment)
     fun inject(russianFragment: RussianFragment)
 
@@ -26,8 +28,6 @@ interface ApplicationComponent {
     fun inject(englishFragment: EnglishFragment)
 
     fun inject(favoritesFragment: FavoritesFragment)
-
-    fun getWordRepository(): WordRepository
 
     @Component.Factory
     interface Factory {

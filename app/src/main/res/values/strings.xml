@@ -21,4 +21,6 @@
     <string name="Russia">RU</string>
     <string name="English">EN</string>
     <string name="empty">Список пуст</string>
+    <string name="error_message">Произошла ошибка, проверте подключение к интернету</string>
+    <!-- TODO: Remove or change this placeholder text -->
 </resources>

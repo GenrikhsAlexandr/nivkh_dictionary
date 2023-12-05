@@ -7,11 +7,14 @@ import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -20,7 +23,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val interactor: WordInteractor,
-    private val application: Application
+    private val application: Application,
 ) : ViewModel() {
 
     private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
@@ -31,7 +34,11 @@ class MainViewModel @Inject constructor(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private lateinit var word: Word
+    private lateinit var favoritesWord: Word
+
+    private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
+
+    private val _query: MutableStateFlow<String> = MutableStateFlow("")
 
     val words: StateFlow<List<WordListItem>> = _words.map { words ->
         words
@@ -44,7 +51,27 @@ class MainViewModel @Inject constructor(
             }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
+
+    val filterWords: StateFlow<List<WordListItem>> = combine(
+        _query,
+        words
+    ) { searchQuery, words ->
+        if (searchQuery.isEmpty()) {
+            words
+        } else {
+            words.filter {
+                it.title.contains(
+                    searchQuery,
+                    ignoreCase = true
+                )
+            }
+        }
+    }.stateIn(CoroutineScope(Dispatchers.IO), SharingStarted.Eagerly, emptyList())
+
+    fun onSearchQuery(query: String) {
+        _query.value = query
+        println("onSearchQuery = ${_query.value}")
+    }
 
     fun setLocale(locale: String) {
         viewModelScope.launch {
@@ -79,12 +106,11 @@ class MainViewModel @Inject constructor(
         isIconClick.value = !isIconClick.value
         viewModelScope.launch {
             if (isIconClick.value) {
-                saveFavoritesWord(word)
+                saveFavoritesWord(favoritesWord)
             } else {
-                deleteFavoritesWord(word)
+                deleteFavoritesWord(favoritesWord)
             }
         }
-        println("isIconClick = ${isIconClick.value}")
     }
 
     private suspend fun saveFavoritesWord(word: Word) {
@@ -98,7 +124,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun setWord(word: Word) {
-        this.word = word
+        favoritesWord = word
         viewModelScope.launch {
             _isFavorite.value = interactor.isFavorite(word)
         }

@@ -65,7 +65,7 @@ class EnglishFragment : Fragment() {
         )
         binding.rvWord.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.words.collect { words ->
+            viewModel.filterWords.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
@@ -74,13 +74,9 @@ class EnglishFragment : Fragment() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.words.collect { words ->
-                    adapter.submitList(words)
-                }
+            TODO()
             }
             swipeRefresh.isRefreshing = false
-        }
         getLocale()
     }
 

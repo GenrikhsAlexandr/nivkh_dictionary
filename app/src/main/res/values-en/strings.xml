@@ -23,13 +23,9 @@ Before you is a Russian-English-Nivkh audio dictionary. The purpose of creating 
 We hope that the creation of a speaking Nivkh dictionary will assist the Nivkh people in preserving and developing their language, as well as educators in organizing classes in the Nivkh language in preschool institutions and general education schools.        \n\n
 \t\t
 The audio dictionary can be used by everyone: those who wish to learn the Nivkh language, linguists and phonetics researchers, as well as foreign specialists.
-        \n\n
-иях и общеобразовательных школах.\n\n
-\t\tАудиословарём смогут пользоваться все: желающие освоить нивхский язык, учёные, занимающиеся лингвистическими и фонетическими изысканиями, иностранные специалисты.\n\n
 </string>
-
     <string name="Russia">RU</string>
     <string name="English">EN</string>
     <string name="empty">Empty</string>
-
+    <string name="error_message">An error has occurred, check your internet connection</string>
 </resources>

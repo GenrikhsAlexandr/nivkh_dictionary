@@ -67,20 +67,19 @@ class NivkhFragment : Fragment() {
         )
         binding.rvWord.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.words.collect { words ->
+            viewModel.filterWords.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
             }
         }
+
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.words.collect { words ->
-                    adapter.submitList(words)
+                viewModel.getAllWords()
                 }
-            }
             swipeRefresh.isRefreshing = false
         }
         getLocale()
@@ -95,4 +94,5 @@ class NivkhFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }
