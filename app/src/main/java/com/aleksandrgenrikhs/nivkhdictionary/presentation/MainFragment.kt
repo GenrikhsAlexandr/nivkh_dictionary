@@ -7,13 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentMainBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainFragment : Fragment() {
@@ -29,7 +32,7 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding get() = _binding!!
 
-    lateinit var searchView: SearchView
+    private lateinit var searchView: SearchView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -42,6 +45,8 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
+        viewLifecycleOwner.lifecycleScope.launch {
+        }
         return binding.root
     }
 
@@ -52,13 +57,15 @@ class MainFragment : Fragment() {
         mainToolBar()
         onBackIconClick()
         getQuery()
+        subscribe()
     }
 
     private fun mainToolBar() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             return@setOnMenuItemClickListener when (item.itemId) {
                 R.id.search -> {
-                    binding.layoutSearchView.visibility = View.VISIBLE
+                    viewModel.isSearchViewVisible.value = true
+                    //binding.layoutSearchView.visibility = View.VISIBLE
                     true
                 }
 
@@ -78,7 +85,9 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.app_name)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    binding.layoutSearchView.visibility = View.GONE
+                    viewModel.isSearchViewVisible.value = false
+
+                    // binding.layoutSearchView.visibility = View.GONE
                     true
                 }
 
@@ -90,7 +99,9 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.favorites)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    binding.layoutSearchView.visibility = View.GONE
+                    viewModel.isSearchViewVisible.value = false
+
+                    //  binding.layoutSearchView.visibility = View.GONE
                     true
                 }
 
@@ -102,7 +113,9 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.about)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
-                    binding.layoutSearchView.visibility = View.GONE
+                    viewModel.isSearchViewVisible.value = false
+
+                    //  binding.layoutSearchView.visibility = View.GONE
                     true
                 }
 
@@ -130,13 +143,25 @@ class MainFragment : Fragment() {
 
     private fun onBackIconClick() {
         binding.ivSearchView.setOnClickListener {
-            binding.layoutSearchView.visibility = View.GONE
+            viewModel.isSearchViewVisible.value = false
 
+            //  binding.layoutSearchView.visibility = View.GONE
+            binding.searchView.setQuery("", false)
+            viewModel.onSearchQuery("")
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun subscribe() {
+        lifecycleScope.launch {
+            viewModel.isSearchViewVisible.collect {
+                binding.layoutSearchView.isVisible = it
+                println("layoutSearchView.isVisible = $it")
+            }
+        }
     }
 }

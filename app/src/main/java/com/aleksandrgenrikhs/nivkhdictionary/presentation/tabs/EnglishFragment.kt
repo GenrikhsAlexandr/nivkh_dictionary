@@ -53,7 +53,7 @@ class EnglishFragment : Fragment() {
     ): View {
         _binding = FragmentEnglishBinding.inflate(inflater, container, false)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getAllWords()
+            viewModel.isFavoriteFragment.value = false
         }
         return binding.root
     }
@@ -65,7 +65,7 @@ class EnglishFragment : Fragment() {
         )
         binding.rvWord.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.filterWords.collect { words ->
+            viewModel.words.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
@@ -84,6 +84,7 @@ class EnglishFragment : Fragment() {
         val locale = "en"
         viewModel.setLocale(locale)
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

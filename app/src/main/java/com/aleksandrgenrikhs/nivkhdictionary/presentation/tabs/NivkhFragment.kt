@@ -55,7 +55,7 @@ class NivkhFragment : Fragment() {
     ): View {
         _binding = FragmentNivkhBinding.inflate(inflater, container, false)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getAllWords()
+            viewModel.isFavoriteFragment.value = false
         }
         return binding.root
     }
@@ -67,7 +67,7 @@ class NivkhFragment : Fragment() {
         )
         binding.rvWord.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.filterWords.collect { words ->
+            viewModel.words.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
@@ -79,10 +79,11 @@ class NivkhFragment : Fragment() {
         swipeRefresh.setOnRefreshListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.getAllWords()
-                }
+            }
             swipeRefresh.isRefreshing = false
         }
         getLocale()
+
     }
 
     private fun getLocale() {

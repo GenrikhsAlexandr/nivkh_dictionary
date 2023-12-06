@@ -49,6 +49,9 @@ class FavoritesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isFavoriteFragment.value = true
+        }
         return binding.root
     }
 
@@ -70,6 +73,7 @@ class FavoritesFragment : Fragment() {
         }
         getWord()
     }
+
 
     private fun getWord() {
         val locale = "nv"

@@ -7,8 +7,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,18 +27,39 @@ class MainViewModel @Inject constructor(
     private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
     val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isFavoriteFragment: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
     val toastMessage: MutableSharedFlow<String> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+
     private lateinit var favoritesWord: Word
 
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
 
     private val _query: MutableStateFlow<String> = MutableStateFlow("")
 
-    val words: StateFlow<List<WordListItem>> = _words.map { words ->
+    private val filterWords: StateFlow<List<Word>> = combine(
+        _query,
+        _words
+    ) { searchQuery, allWords ->
+        println("_query =${_query.value}, _words =${_words.value}  ")
+        if (searchQuery.isEmpty()) allWords
+        else {
+            allWords.filter { word ->
+                word.locales[currentLocale.value.language]?.value?.contains(
+                    searchQuery,
+                    ignoreCase = true
+                ) ?: false
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val words: StateFlow<List<WordListItem>> = filterWords.map { words ->
+        println("filterWords = ${filterWords.value}")
         words
             .mapNotNull { word ->
                 WordListItem(
@@ -51,56 +70,39 @@ class MainViewModel @Inject constructor(
             }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-
-    val filterWords: StateFlow<List<WordListItem>> = combine(
-        _query,
-        words
-    ) { searchQuery, words ->
-        if (searchQuery.isEmpty()) {
-            words
-        } else {
-            words.filter {
-                it.title.contains(
-                    searchQuery,
-                    ignoreCase = true
-                )
-            }
-        }
-    }.stateIn(CoroutineScope(Dispatchers.IO), SharingStarted.Eagerly, emptyList())
-
     fun onSearchQuery(query: String) {
         _query.value = query
-        println("onSearchQuery = ${_query.value}")
     }
 
     fun setLocale(locale: String) {
         viewModelScope.launch {
             currentLocale.value = Locale(locale)
+            println(" setLocale= ${currentLocale.value}")
         }
     }
 
-    fun getAllWords() {
+    init {
         viewModelScope.launch {
             try {
-                _words.value = interactor.getWords()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun getFavoritesWords() {
-
-        viewModelScope.launch {
-            try {
-                interactor.getFavoritesWords().collect {
-                    _words.value = it
+                println("isFavoriteFragment = ${isFavoriteFragment.value}")
+                println("isWordDetail = ${isWordDetail.value}")
+                if (!isFavoriteFragment.value) {
+                    if (!isWordDetail.value) {
+                        _words.value = interactor.getWords()
+                    }
+                } else {
+                    interactor.getFavoritesWords().collect {
+                        _words.value = it
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
+
+    fun getFavoritesWords() {}
+    fun getAllWords() {}
 
     suspend fun onFavoriteButtonClicked() {
         isIconClick.value = !isIconClick.value
@@ -123,7 +125,7 @@ class MainViewModel @Inject constructor(
         toastMessage.tryEmit(application.getString(R.string.delete_word))
     }
 
-    fun setWord(word: Word) {
+    fun isFavoritesWord(word: Word) {
         favoritesWord = word
         viewModelScope.launch {
             _isFavorite.value = interactor.isFavorite(word)

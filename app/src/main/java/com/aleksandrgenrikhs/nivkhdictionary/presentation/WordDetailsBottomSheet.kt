@@ -71,13 +71,16 @@ class WordDetailsBottomSheet(
                 dismiss()
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isWordDetail.value = true
+        }
         getWord(word)
         subscribe()
         return binding.root
     }
 
     private fun getWord(word: Word) {
-        viewModel.setWord(word)
+        viewModel.isFavoritesWord(word)
     }
 
     private fun subscribe() {
