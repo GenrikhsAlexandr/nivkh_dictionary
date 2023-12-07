@@ -57,17 +57,18 @@ class NivkhFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isFavoriteFragment.value = false
         }
+        binding.rvWord.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        )
+        binding.rvWord.adapter = adapter
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvWord.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        )
-        binding.rvWord.adapter = adapter
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
+                println("words = ${viewModel.words.value}")
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
@@ -77,11 +78,9 @@ class NivkhFragment : Fragment() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.getAllWords()
-            }
             swipeRefresh.isRefreshing = false
         }
+
         getLocale()
 
     }

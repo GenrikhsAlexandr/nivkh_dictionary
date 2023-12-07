@@ -64,6 +64,21 @@ class EnglishFragment : Fragment() {
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.rvWord.adapter = adapter
+        subscribe()
+        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
+        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
+        swipeRefresh.setOnRefreshListener {
+            swipeRefresh.isRefreshing = false
+        }
+        getLocale()
+    }
+
+    private fun getLocale() {
+        val locale = "en"
+        viewModel.setLocale(locale)
+    }
+
+    private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
@@ -71,18 +86,6 @@ class EnglishFragment : Fragment() {
                 adapter.submitList(words)
             }
         }
-        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
-        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
-        swipeRefresh.setOnRefreshListener {
-            TODO()
-            }
-            swipeRefresh.isRefreshing = false
-        getLocale()
-    }
-
-    private fun getLocale() {
-        val locale = "en"
-        viewModel.setLocale(locale)
     }
 
 

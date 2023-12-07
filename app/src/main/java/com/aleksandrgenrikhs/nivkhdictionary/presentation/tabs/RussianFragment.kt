@@ -76,14 +76,9 @@ class RussianFragment : Fragment() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                TODO()
-            }
             swipeRefresh.isRefreshing = false
         }
         getLocale()
-
     }
 
     private fun getLocale() {

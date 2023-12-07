@@ -50,10 +50,18 @@ class MainViewModel @Inject constructor(
         if (searchQuery.isEmpty()) allWords
         else {
             allWords.filter { word ->
-                word.locales[currentLocale.value.language]?.value?.contains(
+                word.locales["nv"]?.value?.contains(
                     searchQuery,
                     ignoreCase = true
-                ) ?: false
+                ) ?: false ||
+                        word.locales["en"]?.value?.contains(
+                            searchQuery,
+                            ignoreCase = true
+                        ) ?: false ||
+                        word.locales["ru"]?.value?.contains(
+                            searchQuery,
+                            ignoreCase = true
+                        ) ?: false
             }
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -100,9 +108,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-    fun getFavoritesWords() {}
-    fun getAllWords() {}
 
     suspend fun onFavoriteButtonClicked() {
         isIconClick.value = !isIconClick.value
