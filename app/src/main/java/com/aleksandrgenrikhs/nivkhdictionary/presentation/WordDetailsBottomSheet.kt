@@ -59,7 +59,6 @@ class WordDetailsBottomSheet(
             container,
             false
         ).apply {
-
             nvWord.text = word.locales["nv"]?.value ?: "Nnivh word"
             enWord.text = word.locales["en"]?.value ?: "English word"
             ruWord.text = word.locales["ru"]?.value ?: "Russian word"
@@ -76,6 +75,7 @@ class WordDetailsBottomSheet(
         }
         getWord(word)
         subscribe()
+        viewModel.isSearchViewVisible.value = false
         return binding.root
     }
 

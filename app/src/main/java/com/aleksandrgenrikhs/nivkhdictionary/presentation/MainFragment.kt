@@ -2,12 +2,14 @@ package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
@@ -28,12 +30,8 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
-
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding get() = _binding!!
-
-    private lateinit var searchView: SearchView
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (requireActivity().application as ComponentProvider).provideComponent()
@@ -45,8 +43,6 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
-        viewLifecycleOwner.lifecycleScope.launch {
-        }
         return binding.root
     }
 
@@ -65,7 +61,6 @@ class MainFragment : Fragment() {
             return@setOnMenuItemClickListener when (item.itemId) {
                 R.id.search -> {
                     viewModel.isSearchViewVisible.value = true
-                    //binding.layoutSearchView.visibility = View.VISIBLE
                     true
                 }
 
@@ -86,8 +81,6 @@ class MainFragment : Fragment() {
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
                     viewModel.isSearchViewVisible.value = false
-
-                    // binding.layoutSearchView.visibility = View.GONE
                     true
                 }
 
@@ -100,8 +93,6 @@ class MainFragment : Fragment() {
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
                     viewModel.isSearchViewVisible.value = false
-
-                    //  binding.layoutSearchView.visibility = View.GONE
                     true
                 }
 
@@ -114,8 +105,6 @@ class MainFragment : Fragment() {
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
                     viewModel.isSearchViewVisible.value = false
-
-                    //  binding.layoutSearchView.visibility = View.GONE
                     true
                 }
 
@@ -125,29 +114,14 @@ class MainFragment : Fragment() {
     }
 
     private fun getQuery() {
-        searchView = binding.searchView
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null) {
-                    viewModel.onSearchQuery(newText)
-                }
-                return true
-            }
-
-        })
+        binding.searchBar.doAfterTextChanged { text ->
+            viewModel.onSearchQuery((text ?: "").toString())
+        }
     }
 
     private fun onBackIconClick() {
-        binding.ivSearchView.setOnClickListener {
+        binding.iconBack.setOnClickListener {
             viewModel.isSearchViewVisible.value = false
-
-            //  binding.layoutSearchView.visibility = View.GONE
-            binding.searchView.setQuery("", false)
-            viewModel.onSearchQuery("")
         }
     }
 
@@ -157,10 +131,17 @@ class MainFragment : Fragment() {
     }
 
     private fun subscribe() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isSearchViewVisible.collect {
+                if (!it) {
+                    Log.d("nivkh", "!isSearchViewVisible = $it")
+                    binding.searchBar.setText("")
+                    viewModel.onSearchQuery("")
+                    val imm =
+                        requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(binding.searchBar.windowToken, 0)
+                }
                 binding.layoutSearchView.isVisible = it
-                println("layoutSearchView.isVisible = $it")
             }
         }
     }

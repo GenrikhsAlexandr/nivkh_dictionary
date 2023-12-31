@@ -12,6 +12,8 @@
     <string name="history">History</string>
     <string name="save_word">The word has been saved to favorites</string>
     <string name="delete_word">Word removed from favorites</string>
+    <string name="word_not_found">Word not found</string>
+
 
     <string name="about_text">\t\t
         Dear friends!

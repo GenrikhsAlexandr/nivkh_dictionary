@@ -27,7 +27,6 @@ class RussianFragment : Fragment() {
     lateinit var viewModelFactory: MainViewModelFactory
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
 
-
     companion object {
         fun newInstance() = RussianFragment()
     }
@@ -90,6 +89,4 @@ class RussianFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }

@@ -27,7 +27,6 @@ class NivkhFragment : Fragment() {
     lateinit var viewModelFactory: MainViewModelFactory
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
 
-
     companion object {
         fun newInstance() = NivkhFragment()
     }
@@ -54,6 +53,11 @@ class NivkhFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentNivkhBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isFavoriteFragment.value = false
         }
@@ -61,14 +65,9 @@ class NivkhFragment : Fragment() {
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.rvWord.adapter = adapter
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
-                println("words = ${viewModel.words.value}")
+                println("wordsAdapter = $words")
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
@@ -80,9 +79,7 @@ class NivkhFragment : Fragment() {
         swipeRefresh.setOnRefreshListener {
             swipeRefresh.isRefreshing = false
         }
-
         getLocale()
-
     }
 
     private fun getLocale() {
@@ -94,5 +91,4 @@ class NivkhFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

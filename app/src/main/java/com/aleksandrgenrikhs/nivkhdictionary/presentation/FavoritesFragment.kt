@@ -71,7 +71,6 @@ class FavoritesFragment : Fragment() {
         getWord()
     }
 
-
     private fun getWord() {
         val locale = "nv"
         viewModel.setLocale(locale)

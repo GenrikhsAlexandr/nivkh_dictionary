@@ -29,7 +29,6 @@
             android:text="@string/empty"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textColor="@color/buttonSheet"
-
             android:visibility="visible" />
     </FrameLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

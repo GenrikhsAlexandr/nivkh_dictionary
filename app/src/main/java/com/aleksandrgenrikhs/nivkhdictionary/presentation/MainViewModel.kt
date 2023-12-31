@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
+import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -22,6 +22,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val interactor: WordInteractor,
     private val application: Application,
+    private val searchRepository: SearchRepository
 ) : ViewModel() {
 
     private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
@@ -37,37 +38,9 @@ class MainViewModel @Inject constructor(
     )
 
     private lateinit var favoritesWord: Word
-
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
 
-    private val _query: MutableStateFlow<String> = MutableStateFlow("")
-
-    private val filterWords: StateFlow<List<Word>> = combine(
-        _query,
-        _words
-    ) { searchQuery, allWords ->
-        println("_query =${_query.value}, _words =${_words.value}  ")
-        if (searchQuery.isEmpty()) allWords
-        else {
-            allWords.filter { word ->
-                word.locales["nv"]?.value?.contains(
-                    searchQuery,
-                    ignoreCase = true
-                ) ?: false ||
-                        word.locales["en"]?.value?.contains(
-                            searchQuery,
-                            ignoreCase = true
-                        ) ?: false ||
-                        word.locales["ru"]?.value?.contains(
-                            searchQuery,
-                            ignoreCase = true
-                        ) ?: false
-            }
-        }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    val words: StateFlow<List<WordListItem>> = filterWords.map { words ->
-        println("filterWords = ${filterWords.value}")
+    val words: StateFlow<List<WordListItem>> = _words.map { words ->
         words
             .mapNotNull { word ->
                 WordListItem(
@@ -79,7 +52,7 @@ class MainViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun onSearchQuery(query: String) {
-        _query.value = query
+        searchRepository.setSearchRequest(query)
     }
 
     fun setLocale(locale: String) {
@@ -96,11 +69,25 @@ class MainViewModel @Inject constructor(
                 println("isWordDetail = ${isWordDetail.value}")
                 if (!isFavoriteFragment.value) {
                     if (!isWordDetail.value) {
-                        _words.value = interactor.getWords()
+                        searchRepository.allWord.value = interactor.getWords()
+                        viewModelScope.launch {
+                            searchRepository.filterWords.collect {
+                                _words.value = it
+                            }
+                        }
                     }
                 } else {
-                    interactor.getFavoritesWords().collect {
-                        _words.value = it
+                    viewModelScope.launch {
+                        interactor.getFavoritesWords().collect { words ->
+                            searchRepository.setWord(words)
+                        }
+                    }
+                    viewModelScope.launch {
+                        searchRepository.filterWords.collect {
+                            _words.value = it
+                            println(" _wordInit= $it")
+
+                        }
                     }
                 }
             } catch (e: Exception) {

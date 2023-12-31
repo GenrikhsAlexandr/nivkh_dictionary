@@ -2,6 +2,7 @@ package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
+import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordMapper
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.AppDatabase
@@ -38,6 +39,13 @@ interface DataModule {
         ): WordDao {
             return AppDatabase.getInstance(application).wordsRequestDao()
         }
+
+        @Provides
+        @Singleton
+        fun provideSearchRepository(): SearchRepository {
+            return SearchRepository
+        }
+
     }
 
     @Binds
