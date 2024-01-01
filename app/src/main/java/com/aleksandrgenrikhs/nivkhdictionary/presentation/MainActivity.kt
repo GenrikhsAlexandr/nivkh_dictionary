@@ -1,5 +1,8 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,10 +22,29 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Handler(Looper.getMainLooper()).postDelayed({
-            supportFragmentManager.commit {
-                replace(R.id.container, MainFragment.newInstance())
-            }
+            println("isNetworkConnected = ${isNetworkConnected()}")
+            if (isNetworkConnected()) {
+                startMainFragment()
+            } else startErrorActivity()
             binding.lottieAnimationView.isVisible = false
         }, 3000)
+    }
+
+    private fun startErrorActivity() {
+        val intent = Intent(this@MainActivity, ErrorActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startMainFragment() {
+        supportFragmentManager.commit {
+            replace(R.id.container, MainFragment.newInstance())
+        }
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 }
