@@ -1,11 +1,14 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
 import android.content.Context
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,8 +16,10 @@ import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.WordDetailsBottomsheetBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +32,8 @@ class WordDetailsBottomSheet(
     lateinit var viewModelFactory: MainViewModelFactory
 
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
+
+    private var player: MediaPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -59,9 +66,14 @@ class WordDetailsBottomSheet(
             container,
             false
         ).apply {
-            nvWord.text = word.locales["nv"]?.value ?: "Nnivh word"
-            enWord.text = word.locales["en"]?.value ?: "English word"
-            ruWord.text = word.locales["ru"]?.value ?: "Russian word"
+            viewLifecycleOwner.lifecycleScope.launch {
+                nvWord.text = word.locales["nv"]?.value ?: "Nnivh word"
+                enWord.text = word.locales["en"]?.value ?: "English word"
+                ruWord.text = word.locales["ru"]?.value ?: "Russian word"
+                speakButton.isVisible = player == null
+                //getPlayer()
+                //  sound()
+            }
         }
         binding.btSaved.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -107,6 +119,40 @@ class WordDetailsBottomSheet(
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.toastMessage.collect { message ->
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getPlayer(): MediaPlayer? {
+        if (player == null) {
+            player = initPlayer()
+        }
+        return player
+    }
+
+    private fun initPlayer(): MediaPlayer? {
+        val nvLocale = word.locales[Language.NIVKH.code] ?: return null
+        val audioPath = nvLocale.audioPath
+        if (audioPath != null) {
+            return MediaPlayer.create(context, Uri.parse(audioPath))
+        } else {
+            return null
+        }
+    }
+
+    private fun play() {
+        player?.start()
+    }
+
+    private fun sound() {
+        binding.speakButton.setOnClickListener {
+            if (player?.isPlaying == true) return@setOnClickListener
+            try {
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    play()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
