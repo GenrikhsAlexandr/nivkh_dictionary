@@ -1,6 +1,7 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,9 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aleksandrgenrikhs.nivkhdictionary.R
+import com.aleksandrgenrikhs.nivkhdictionary.Utils.NetworkConnected
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentEnglishBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.ErrorActivity
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
@@ -64,12 +67,22 @@ class EnglishFragment : Fragment() {
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.rvWord.adapter = adapter
-        subscribe()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.words.collect { words ->
+                binding.progressBar.isVisible = words.isEmpty()
+                binding.rvWord.isVisible = words.isNotEmpty()
+                adapter.submitList(words)
+                println("wordsForAdapter = $words")
+            }
+        }
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
-
-            viewModel.getAndSaveWords()
+            if (NetworkConnected.isNetworkConnected(requireContext())) {
+                viewModel.getAndSaveWords()
+            } else {
+                startErrorActivity()
+            }
             swipeRefresh.isRefreshing = false
         }
         getLocale()
@@ -80,18 +93,13 @@ class EnglishFragment : Fragment() {
         viewModel.setLocale(locale)
     }
 
-    private fun subscribe() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.words.collect { words ->
-                binding.progressBar.isVisible = words.isEmpty()
-                binding.rvWord.isVisible = words.isNotEmpty()
-                adapter.submitList(words)
-            }
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun startErrorActivity() {
+        val intent = Intent(requireActivity(), ErrorActivity::class.java)
+        startActivity(intent)
     }
 }

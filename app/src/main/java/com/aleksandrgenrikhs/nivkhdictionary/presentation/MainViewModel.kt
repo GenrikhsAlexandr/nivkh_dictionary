@@ -40,13 +40,6 @@ class MainViewModel @Inject constructor(
     private lateinit var favoritesWord: Word
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
 
-    fun setLocale(locale: String) {
-        viewModelScope.launch {
-            currentLocale.value = Locale(locale)
-            println(" setLocale= ${currentLocale.value}")
-        }
-    }
-
     val words: StateFlow<List<WordListItem>> = _words.map { words ->
         words
             .mapNotNull { word ->
@@ -62,51 +55,59 @@ class MainViewModel @Inject constructor(
         searchRepository.setSearchRequest(query)
     }
 
+
+    fun setLocale(locale: String) {
+        viewModelScope.launch {
+            currentLocale.value = Locale(locale)
+            println(" setLocale= ${currentLocale.value}")
+        }
+    }
+
     fun getAndSaveWords() {
         viewModelScope.launch {
             try {
                 interactor.getAndSaveWords()
             } catch (e: Exception) {
+                emptyList()
             }
         }
     }
 
     init {
-        try {
-            if (!isFavoriteFragment.value) {
-                if (!isWordDetail.value) {
-                    viewModelScope.launch {
+        viewModelScope.launch {
+            try {
+                if (!isFavoriteFragment.value) {
+                    if (!isWordDetail.value) {
                         interactor.getWordsFromDb().collect {
                             _countWWord.value = it.size
                             searchRepository.setWord(it)
                             println("wordFromDB = $it")
+                            println("isFavoriteFragment = ${isFavoriteFragment.value}")
+                            searchRepository.filterWords.collect { word ->
+                                _words.value = word
+                                println(" _wordForNivkh= ${_words.value}")
+                                println("isFavoriteFragment = ${isFavoriteFragment.value}")
+                            }
+                        }
+                    }
+                } else {
+                    viewModelScope.launch {
+                        interactor.getFavoritesWords().collect { words ->
+                            searchRepository.setWord(words)
+                            println("FavoritesWord= ${words}")
                         }
                     }
                     viewModelScope.launch {
-                        searchRepository.filterWords.collect { word ->
-                            _words.value = word
-                            println(" _wordForNivkh= ${_words.value}")
-                            println(" wordNivch= ${words.value}")
+                        searchRepository.filterWords.collect {
+                            _words.value = it
+                            println(" _wordInit= $it")
                         }
                     }
                 }
-            } else {
-                viewModelScope.launch {
-                    interactor.getFavoritesWords().collect { words ->
-                        searchRepository.setWord(words)
-                    }
-                }
-                viewModelScope.launch {
-                    searchRepository.filterWords.collect {
-                        _words.value = it
-                        println(" _wordInit= $it")
 
-                    }
-                }
+            } catch (e: Exception) {
+                println("error ${e.message}")
             }
-
-        } catch (e: Exception) {
-            println("error ${e.message}")
         }
     }
 
@@ -135,22 +136,6 @@ class MainViewModel @Inject constructor(
         favoritesWord = word
         viewModelScope.launch {
             _isFavorite.value = interactor.isFavorite(word)
-        }
-    }
-
-    fun init() {
-        viewModelScope.launch {
-            interactor.getWordsFromDb().collect {
-                _countWWord.value = it.size
-                searchRepository.setWord(it)
-            }
-        }
-        viewModelScope.launch {
-            searchRepository.filterWords.collect { word ->
-                _words.value = word
-                println(" _wordForNivkh= ${_words.value}")
-                println(" wordNivch= ${words.value}")
-            }
         }
     }
 }

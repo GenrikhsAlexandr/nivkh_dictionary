@@ -21,6 +21,8 @@ import com.aleksandrgenrikhs.nivkhdictionary.presentation.ErrorActivity
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -73,7 +75,14 @@ class NivkhFragment : Fragment() {
                 binding.progressBar.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
+                println("wordsForAdapter = $words")
             }
+        }
+        lifecycleScope.launch {
+            viewModel.toastMessage.filterNotNull()
+                .collect {
+                    Snackbar.make(binding.root, getString(it), Snackbar.LENGTH_LONG).show()
+                }
         }
 
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
@@ -99,7 +108,7 @@ class NivkhFragment : Fragment() {
         _binding = null
     }
 
-    fun startErrorActivity() {
+    private fun startErrorActivity() {
         val intent = Intent(requireActivity(), ErrorActivity::class.java)
         startActivity(intent)
     }
