@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [WordDbModel::class], version = 4, exportSchema = false)
+@Database(entities = [WordDbFavorites::class, AllWordsDb::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     companion object {

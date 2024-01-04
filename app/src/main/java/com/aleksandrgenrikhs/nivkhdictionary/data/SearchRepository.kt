@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.stateIn
 
 object SearchRepository {
     private val _searchRequest: MutableStateFlow<String> = MutableStateFlow("")
-    val allWord: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
+    private val allWord: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
 
     val filterWords: StateFlow<List<Word>> = combine(
         _searchRequest,
         allWord
     ) { searchQuery, allWords ->
+        println("allWord =${allWord.value} ")
+
         if (searchQuery.isEmpty()) allWords
         else {
             allWords.filter { word ->

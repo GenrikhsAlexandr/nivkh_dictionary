@@ -10,14 +10,26 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WordDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWord(word: WordDbModel)
+    suspend fun insertFavoritesWord(word: WordDbFavorites)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllWord(word: AllWordsDb)
+
+    @Query("SELECT * FROM all_word")
+    fun getWordsFromDb(): Flow<List<AllWordsDb>>
 
     @Query("SELECT * FROM word")
-    fun getWordsFromDb(): Flow<List<WordDbModel>>
+    fun getFavorites(): Flow<List<WordDbFavorites>>
+
+    @Query("SELECT * FROM all_word")
+    fun getCount(): Flow<List<WordDbFavorites>>
 
     @Query("SELECT * FROM word WHERE id = :wordId")
-    suspend fun getWordById(wordId: String): WordDbModel?
+    suspend fun getWordById(wordId: String): WordDbFavorites?
 
     @Delete
-    suspend fun deleteWord(word: WordDbModel)
+    suspend fun deleteWord(word: WordDbFavorites)
+
+    @Query("DELETE FROM all_word")
+    suspend fun deleteAll()
 }

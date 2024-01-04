@@ -21,9 +21,8 @@
             android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
             android:textColor="@color/secondary_container"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/btSaved"
+            app:layout_constraintEnd_toStartOf="@id/btSaved"
             app:layout_constraintStart_toEndOf="@id/speakButton"
-            app:layout_constraintStart_toStartOf="@+id/speakButton"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Nivh word" />
 
@@ -64,6 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:textColor="@color/dark_text"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
         tools:text="Russian" />
 
@@ -81,6 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:textColor="@color/dark_text"
         android:layout_marginBottom="32dp"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
         tools:text="English" />

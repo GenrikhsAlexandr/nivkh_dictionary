@@ -5,4 +5,6 @@ import java.util.Locale
 data class LocaleData(
     val locale: Locale,
     val value: String,
+    val audioPath: String? = null
+
 )

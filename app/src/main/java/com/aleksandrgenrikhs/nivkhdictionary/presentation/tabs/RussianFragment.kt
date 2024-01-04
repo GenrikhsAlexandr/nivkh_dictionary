@@ -61,6 +61,10 @@ class RussianFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getLocale()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.init()
+        }
         binding.rvWord.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
@@ -75,9 +79,10 @@ class RussianFragment : Fragment() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
+            viewModel.getAndSaveWords()
             swipeRefresh.isRefreshing = false
         }
-        getLocale()
+
     }
 
     private fun getLocale() {

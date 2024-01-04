@@ -2,6 +2,7 @@ package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.FavoritesFragment
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainActivity
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainFragment
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.EnglishFragment
@@ -28,6 +29,8 @@ interface ApplicationComponent {
     fun inject(englishFragment: EnglishFragment)
 
     fun inject(favoritesFragment: FavoritesFragment)
+
+    fun inject(activity: MainActivity)
 
     @Component.Factory
     interface Factory {

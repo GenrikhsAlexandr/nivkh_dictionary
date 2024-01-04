@@ -2,6 +2,7 @@ package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
+import com.aleksandrgenrikhs.nivkhdictionary.Utils.NetworkConnected
 import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordMapper
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
@@ -44,6 +45,12 @@ interface DataModule {
         @Singleton
         fun provideSearchRepository(): SearchRepository {
             return SearchRepository
+        }
+
+        @Provides
+        @Singleton
+        fun networkConnected(): NetworkConnected {
+            return NetworkConnected
         }
 
     }

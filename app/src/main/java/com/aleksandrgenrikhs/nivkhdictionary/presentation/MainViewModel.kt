@@ -1,6 +1,5 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -21,7 +20,6 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val interactor: WordInteractor,
-    private val application: Application,
     private val searchRepository: SearchRepository
 ) : ViewModel() {
 
@@ -29,16 +27,25 @@ class MainViewModel @Inject constructor(
     val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavoriteFragment: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _countWWord: MutableStateFlow<Int> = MutableStateFlow(0)
+    val countWWord: StateFlow<Int> = _countWWord
     val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
-    val toastMessage: MutableSharedFlow<String> = MutableSharedFlow(
+    val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
     private lateinit var favoritesWord: Word
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
+
+    fun setLocale(locale: String) {
+        viewModelScope.launch {
+            currentLocale.value = Locale(locale)
+            println(" setLocale= ${currentLocale.value}")
+        }
+    }
 
     val words: StateFlow<List<WordListItem>> = _words.map { words ->
         words
@@ -55,44 +62,51 @@ class MainViewModel @Inject constructor(
         searchRepository.setSearchRequest(query)
     }
 
-    fun setLocale(locale: String) {
+    fun getAndSaveWords() {
         viewModelScope.launch {
-            currentLocale.value = Locale(locale)
-            println(" setLocale= ${currentLocale.value}")
+            try {
+                interactor.getAndSaveWords()
+            } catch (e: Exception) {
+            }
         }
     }
 
     init {
-        viewModelScope.launch {
-            try {
-                println("isFavoriteFragment = ${isFavoriteFragment.value}")
-                println("isWordDetail = ${isWordDetail.value}")
-                if (!isFavoriteFragment.value) {
-                    if (!isWordDetail.value) {
-                        searchRepository.allWord.value = interactor.getWords()
-                        viewModelScope.launch {
-                            searchRepository.filterWords.collect {
-                                _words.value = it
-                            }
-                        }
-                    }
-                } else {
+        try {
+            if (!isFavoriteFragment.value) {
+                if (!isWordDetail.value) {
                     viewModelScope.launch {
-                        interactor.getFavoritesWords().collect { words ->
-                            searchRepository.setWord(words)
+                        interactor.getWordsFromDb().collect {
+                            _countWWord.value = it.size
+                            searchRepository.setWord(it)
+                            println("wordFromDB = $it")
                         }
                     }
                     viewModelScope.launch {
-                        searchRepository.filterWords.collect {
-                            _words.value = it
-                            println(" _wordInit= $it")
-
+                        searchRepository.filterWords.collect { word ->
+                            _words.value = word
+                            println(" _wordForNivkh= ${_words.value}")
+                            println(" wordNivch= ${words.value}")
                         }
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } else {
+                viewModelScope.launch {
+                    interactor.getFavoritesWords().collect { words ->
+                        searchRepository.setWord(words)
+                    }
+                }
+                viewModelScope.launch {
+                    searchRepository.filterWords.collect {
+                        _words.value = it
+                        println(" _wordInit= $it")
+
+                    }
+                }
             }
+
+        } catch (e: Exception) {
+            println("error ${e.message}")
         }
     }
 
@@ -109,18 +123,34 @@ class MainViewModel @Inject constructor(
 
     private suspend fun saveFavoritesWord(word: Word) {
         interactor.saveFavoriteWord(word)
-        toastMessage.tryEmit(application.getString(R.string.save_word))
+        toastMessage.tryEmit(R.string.save_word)
     }
 
     private suspend fun deleteFavoritesWord(word: Word) {
         interactor.deleteFavoriteWord(word)
-        toastMessage.tryEmit(application.getString(R.string.delete_word))
+        toastMessage.tryEmit(R.string.delete_word)
     }
 
     fun isFavoritesWord(word: Word) {
         favoritesWord = word
         viewModelScope.launch {
             _isFavorite.value = interactor.isFavorite(word)
+        }
+    }
+
+    fun init() {
+        viewModelScope.launch {
+            interactor.getWordsFromDb().collect {
+                _countWWord.value = it.size
+                searchRepository.setWord(it)
+            }
+        }
+        viewModelScope.launch {
+            searchRepository.filterWords.collect { word ->
+                _words.value = word
+                println(" _wordForNivkh= ${_words.value}")
+                println(" wordNivch= ${words.value}")
+            }
         }
     }
 }

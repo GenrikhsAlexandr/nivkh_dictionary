@@ -68,6 +68,8 @@ class EnglishFragment : Fragment() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
+
+            viewModel.getAndSaveWords()
             swipeRefresh.isRefreshing = false
         }
         getLocale()

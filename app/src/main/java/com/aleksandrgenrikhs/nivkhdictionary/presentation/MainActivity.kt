@@ -10,22 +10,39 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
+import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
+import com.aleksandrgenrikhs.nivkhdictionary.WordApplication
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+
+    @Inject
+    lateinit var viewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
+        (applicationContext as WordApplication).applicationComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Handler(Looper.getMainLooper()).postDelayed({
-            println("isNetworkConnected = ${isNetworkConnected()}")
-            if (isNetworkConnected()) {
+            if (viewModel.countWWord.value == 0) {
+                if (isNetworkConnected()) {
+                    viewModel.viewModelScope.launch {
+                        viewModel.getAndSaveWords()
+                        startMainFragment()
+                    }
+                } else {
+                    startErrorActivity()
+                }
+            } else {
                 startMainFragment()
-            } else startErrorActivity()
+            }
             binding.lottieAnimationView.isVisible = false
         }, 3000)
     }
