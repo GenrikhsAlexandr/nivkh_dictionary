@@ -1,8 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,15 +12,18 @@ import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.WordApplication
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.ActivityMainBinding
+import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-
 
     @Inject
     lateinit var viewModel: MainViewModel
+
+    @Inject
+    lateinit var networkConnected: NetworkConnected
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -31,8 +32,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Handler(Looper.getMainLooper()).postDelayed({
-            if (viewModel.countWWord.value == 0) {
-                if (isNetworkConnected()) {
+            if (viewModel.countWord.value == 0) {
+                if (networkConnected.isNetworkConnected(application)) {
                     viewModel.viewModelScope.launch {
                         viewModel.getAndSaveWords()
                         startMainFragment()
@@ -56,12 +57,5 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.commit {
             replace(R.id.container, MainFragment.newInstance())
         }
-    }
-
-    private fun isNetworkConnected(): Boolean {
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
     }
 }

@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +17,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
+import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,19 +27,6 @@ import javax.inject.Inject
 class WordDetailsBottomSheet(
     private val word: Word
 ) : BottomSheetDialogFragment() {
-
-    @Inject
-    lateinit var viewModelFactory: MainViewModelFactory
-
-    private val viewModel: MainViewModel by viewModels { viewModelFactory }
-
-    private var player: MediaPlayer? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (requireActivity().application as ComponentProvider).provideComponent()
-            .inject(this)
-    }
 
     companion object {
         private const val TAG = "WordDetailsBottomSheet"
@@ -53,8 +40,18 @@ class WordDetailsBottomSheet(
         }
     }
 
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
     private var _binding: WordDetailsBottomsheetBinding? = null
     private val binding: WordDetailsBottomsheetBinding get() = _binding!!
+    private var player: MediaPlayer? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as ComponentProvider).provideComponent()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,12 +64,9 @@ class WordDetailsBottomSheet(
             false
         ).apply {
             viewLifecycleOwner.lifecycleScope.launch {
-                nvWord.text = word.locales["nv"]?.value ?: "Nnivh word"
-                enWord.text = word.locales["en"]?.value ?: "English word"
-                ruWord.text = word.locales["ru"]?.value ?: "Russian word"
-                speakButton.isVisible = player == null
-                //getPlayer()
-                //  sound()
+                nvWord.text = word.locales[Language.NIVKH.code]?.value ?: "Nnivh word"
+                enWord.text = word.locales[Language.ENGLISH.code]?.value ?: "English word"
+                ruWord.text = word.locales[Language.RUSSIAN.code]?.value ?: "Russian word"
             }
         }
         binding.btSaved.setOnClickListener {
@@ -87,7 +81,7 @@ class WordDetailsBottomSheet(
         }
         getWord(word)
         subscribe()
-        viewModel.isSearchViewVisible.value = false
+        sound()
         return binding.root
     }
 
@@ -123,36 +117,29 @@ class WordDetailsBottomSheet(
         }
     }
 
-    private fun getPlayer(): MediaPlayer? {
-        if (player == null) {
-            player = initPlayer()
-        }
-        return player
-    }
-
-    private fun initPlayer(): MediaPlayer? {
+    private fun createPlayer(): MediaPlayer? {
         val nvLocale = word.locales[Language.NIVKH.code] ?: return null
-        val audioPath = nvLocale.audioPath
-        if (audioPath != null) {
-            return MediaPlayer.create(context, Uri.parse(audioPath))
-        } else {
-            return null
-        }
-    }
-
-    private fun play() {
-        player?.start()
+        val url = "${nvLocale.audioPath}"
+        println("uri = $url")
+        return MediaPlayer.create(context, Uri.parse(url))
     }
 
     private fun sound() {
         binding.speakButton.setOnClickListener {
-            if (player?.isPlaying == true) return@setOnClickListener
-            try {
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                    play()
+            if (NetworkConnected.isNetworkConnected(requireContext())) {
+                if (player?.isPlaying == true) return@setOnClickListener
+                try {
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        createPlayer()?.start()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } else {
+                Toast.makeText(
+                    context, R.string.error_message,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }

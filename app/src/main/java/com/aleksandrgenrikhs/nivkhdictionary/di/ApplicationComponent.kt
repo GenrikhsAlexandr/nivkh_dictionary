@@ -22,6 +22,7 @@ interface ApplicationComponent {
     fun inject(mainFragment: MainFragment)
 
     fun inject(nivkhFragment: NivkhFragment)
+
     fun inject(russianFragment: RussianFragment)
 
     fun inject(bottomSheet: WordDetailsBottomSheet)

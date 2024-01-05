@@ -21,9 +21,6 @@ interface WordDao {
     @Query("SELECT * FROM word")
     fun getFavorites(): Flow<List<WordDbFavorites>>
 
-    @Query("SELECT * FROM all_word")
-    fun getCount(): Flow<List<WordDbFavorites>>
-
     @Query("SELECT * FROM word WHERE id = :wordId")
     suspend fun getWordById(wordId: String): WordDbFavorites?
 

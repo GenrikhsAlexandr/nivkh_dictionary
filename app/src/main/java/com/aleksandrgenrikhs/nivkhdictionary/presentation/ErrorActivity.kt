@@ -11,12 +11,10 @@ class ErrorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityErrorBinding.inflate(layoutInflater)
-
         binding.refreshButton.setOnClickListener {
             val intent = Intent(this@ErrorActivity, MainActivity::class.java)
             startActivity(intent)
         }
-
         setContentView(binding.root)
     }
 }

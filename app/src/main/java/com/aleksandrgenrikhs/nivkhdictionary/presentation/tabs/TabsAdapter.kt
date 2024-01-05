@@ -3,7 +3,7 @@ package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class TabsAdapter(fragment:Fragment) : FragmentStateAdapter(fragment) {
+class TabsAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = 3
 

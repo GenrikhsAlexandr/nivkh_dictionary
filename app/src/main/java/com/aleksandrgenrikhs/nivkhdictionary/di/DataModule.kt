@@ -2,7 +2,6 @@ package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import com.aleksandrgenrikhs.nivkhdictionary.Utils.NetworkConnected
 import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordMapper
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
@@ -10,6 +9,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.data.database.AppDatabase
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
+import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -52,7 +52,6 @@ interface DataModule {
         fun networkConnected(): NetworkConnected {
             return NetworkConnected
         }
-
     }
 
     @Binds

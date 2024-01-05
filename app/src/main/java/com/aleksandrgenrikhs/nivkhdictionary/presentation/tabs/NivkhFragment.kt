@@ -1,11 +1,12 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,32 +14,27 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aleksandrgenrikhs.nivkhdictionary.R
-import com.aleksandrgenrikhs.nivkhdictionary.Utils.NetworkConnected
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
-import com.aleksandrgenrikhs.nivkhdictionary.presentation.ErrorActivity
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.filterNotNull
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class NivkhFragment : Fragment() {
 
-    @Inject
-    lateinit var viewModelFactory: MainViewModelFactory
-    private val viewModel: MainViewModel by viewModels { viewModelFactory }
-
     companion object {
         fun newInstance() = NivkhFragment()
     }
 
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
     private var _binding: FragmentNivkhBinding? = null
     private val binding: FragmentNivkhBinding get() = _binding!!
-
     private val adapter: WordAdapter = WordAdapter(
         onWordClick = { word ->
             WordDetailsBottomSheet.show(
@@ -46,6 +42,7 @@ class NivkhFragment : Fragment() {
             )
         }
     )
+    private var updateDialog: AlertDialog? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -70,6 +67,26 @@ class NivkhFragment : Fragment() {
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.rvWord.adapter = adapter
+        subscribe()
+        getLocale()
+        refresh()
+    }
+
+    private fun getLocale() {
+        val locale = "nv"
+        viewModel.setLocale(locale)
+    }
+
+    private fun refresh() {
+        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
+        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
+        swipeRefresh.setOnRefreshListener {
+            viewModel.getAndSaveWords()
+            swipeRefresh.isRefreshing = false
+        }
+    }
+
+    private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
                 binding.progressBar.isVisible = words.isEmpty()
@@ -78,38 +95,37 @@ class NivkhFragment : Fragment() {
                 println("wordsForAdapter = $words")
             }
         }
-        lifecycleScope.launch {
-            viewModel.toastMessage.filterNotNull()
-                .collect {
-                    Snackbar.make(binding.root, getString(it), Snackbar.LENGTH_LONG).show()
-                }
-        }
-
-        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
-        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
-        swipeRefresh.setOnRefreshListener {
-            if (NetworkConnected.isNetworkConnected(requireContext())) {
-                viewModel.getAndSaveWords()
-            } else {
-                startErrorActivity()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.toastMessage.collect {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
-            swipeRefresh.isRefreshing = false
         }
-        getLocale()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isUpdateDialogShowing.collect {
+                if (it) {
+                    view?.let { view -> showUpdateDialog(view) }
+                } else {
+                    updateDialog?.dismiss()
+                    updateDialog = null
+                }
+            }
+        }
     }
 
-    private fun getLocale() {
-        val locale = "nv"
-        viewModel.setLocale(locale)
+    private fun showUpdateDialog(view: View) {
+        updateDialog = MaterialAlertDialogBuilder(
+            view.context,
+            R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+        )
+            .setMessage(R.string.dialog_update_words_title)
+            .setCancelable(false)
+            .setView(R.layout.dialog_update_words)
+            .create()
+        updateDialog?.show()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun startErrorActivity() {
-        val intent = Intent(requireActivity(), ErrorActivity::class.java)
-        startActivity(intent)
     }
 }

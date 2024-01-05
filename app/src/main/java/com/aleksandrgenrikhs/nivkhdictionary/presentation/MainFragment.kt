@@ -2,7 +2,6 @@ package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +31,7 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding get() = _binding!!
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (requireActivity().application as ComponentProvider).provideComponent()
@@ -43,8 +43,6 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
-
-
         return binding.root
     }
 
@@ -136,7 +134,6 @@ class MainFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isSearchViewVisible.collect {
                 if (!it) {
-                    Log.d("nivkh", "!isSearchViewVisible = $it")
                     binding.searchBar.setText("")
                     viewModel.onSearchQuery("")
                     val imm =

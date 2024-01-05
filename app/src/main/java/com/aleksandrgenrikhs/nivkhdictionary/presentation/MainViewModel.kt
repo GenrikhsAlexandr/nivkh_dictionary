@@ -1,5 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -7,6 +8,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
+import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,25 +22,27 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val interactor: WordInteractor,
-    private val searchRepository: SearchRepository
+    private val searchRepository: SearchRepository,
+    private val application: Application,
+    private val networkConnected: NetworkConnected
 ) : ViewModel() {
 
     private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
-    val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _countWord: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
+    val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavoriteFragment: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val _countWWord: MutableStateFlow<Int> = MutableStateFlow(0)
-    val countWWord: StateFlow<Int> = _countWWord
+    val countWord: StateFlow<Int> = _countWord
     val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isUpdateDialogShowing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
     val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-
     private lateinit var favoritesWord: Word
-    private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
 
     val words: StateFlow<List<WordListItem>> = _words.map { words ->
         words
@@ -55,7 +59,6 @@ class MainViewModel @Inject constructor(
         searchRepository.setSearchRequest(query)
     }
 
-
     fun setLocale(locale: String) {
         viewModelScope.launch {
             currentLocale.value = Locale(locale)
@@ -65,10 +68,16 @@ class MainViewModel @Inject constructor(
 
     fun getAndSaveWords() {
         viewModelScope.launch {
-            try {
-                interactor.getAndSaveWords()
-            } catch (e: Exception) {
-                emptyList()
+            if (networkConnected.isNetworkConnected(application)) {
+                isUpdateDialogShowing.value = true
+                try {
+                    interactor.getAndSaveWords()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                isUpdateDialogShowing.value = false
+            } else {
+                toastMessage.tryEmit(R.string.error_message)
             }
         }
     }
@@ -79,14 +88,10 @@ class MainViewModel @Inject constructor(
                 if (!isFavoriteFragment.value) {
                     if (!isWordDetail.value) {
                         interactor.getWordsFromDb().collect {
-                            _countWWord.value = it.size
+                            _countWord.value = it.size
                             searchRepository.setWord(it)
-                            println("wordFromDB = $it")
-                            println("isFavoriteFragment = ${isFavoriteFragment.value}")
                             searchRepository.filterWords.collect { word ->
                                 _words.value = word
-                                println(" _wordForNivkh= ${_words.value}")
-                                println("isFavoriteFragment = ${isFavoriteFragment.value}")
                             }
                         }
                     }
@@ -94,19 +99,17 @@ class MainViewModel @Inject constructor(
                     viewModelScope.launch {
                         interactor.getFavoritesWords().collect { words ->
                             searchRepository.setWord(words)
-                            println("FavoritesWord= ${words}")
                         }
                     }
                     viewModelScope.launch {
                         searchRepository.filterWords.collect {
                             _words.value = it
-                            println(" _wordInit= $it")
                         }
                     }
                 }
 
             } catch (e: Exception) {
-                println("error ${e.message}")
+                e.printStackTrace()
             }
         }
     }

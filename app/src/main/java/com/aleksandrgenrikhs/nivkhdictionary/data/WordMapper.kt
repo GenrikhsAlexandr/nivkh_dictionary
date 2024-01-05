@@ -57,9 +57,9 @@ class WordMapper @Inject constructor() {
 
     fun mapWordToWordDbFavorites(word: Word) = WordDbFavorites(
         id = word.id,
-        nv = word.locales["nv"]?.value ?: "",
-        ru = word.locales["ru"]?.value ?: "",
-        en = word.locales["en"]?.value ?: "",
+        nv = word.locales[Language.NIVKH.code]?.value ?: "",
+        ru = word.locales[Language.RUSSIAN.code]?.value ?: "",
+        en = word.locales[Language.ENGLISH.code]?.value ?: "",
     )
 
     fun mapAllWordsDbToWord(allWordsDb: AllWordsDb): Word {
@@ -79,8 +79,8 @@ class WordMapper @Inject constructor() {
 
     fun mapWordToAllWordsDb(word: Word) = AllWordsDb(
         id = word.id,
-        nv = word.locales["nv"]?.value ?: "",
-        ru = word.locales["ru"]?.value ?: "",
-        en = word.locales["en"]?.value ?: ""
+        nv = word.locales[Language.NIVKH.code]?.value ?: "",
+        ru = word.locales[Language.RUSSIAN.code]?.value ?: "",
+        en = word.locales[Language.ENGLISH.code]?.value ?: "",
     )
 }

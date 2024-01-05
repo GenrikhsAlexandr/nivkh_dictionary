@@ -14,6 +14,4 @@ class WordApplication : Application(), ComponentProvider {
     override fun provideComponent(): ApplicationComponent {
         return applicationComponent
     }
-
-
 }

@@ -24,12 +24,9 @@ class FavoritesFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
-
     private val viewModel: MainViewModel by viewModels { viewModelFactory }
-
     private var _binding: FragmentFavoritesBinding? = null
     private val binding: FragmentFavoritesBinding get() = _binding!!
-
     private val adapter: WordAdapter = WordAdapter(
         onWordClick = { word ->
             WordDetailsBottomSheet.show(
@@ -61,6 +58,16 @@ class FavoritesFragment : Fragment() {
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.rvWord.adapter = adapter
+        subscribe()
+        getWord()
+    }
+
+    private fun getWord() {
+        val locale = "nv"
+        viewModel.setLocale(locale)
+    }
+
+    private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
                 binding.tvEmpty.isVisible = words.isEmpty()
@@ -68,12 +75,6 @@ class FavoritesFragment : Fragment() {
                 adapter.submitList(words)
             }
         }
-        getWord()
-    }
-
-    private fun getWord() {
-        val locale = "nv"
-        viewModel.setLocale(locale)
     }
 
     override fun onDestroyView() {

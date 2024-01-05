@@ -1,4 +1,4 @@
-package com.aleksandrgenrikhs.nivkhdictionary.Utils
+package com.aleksandrgenrikhs.nivkhdictionary.utils
 
 import android.content.Context
 import android.net.ConnectivityManager

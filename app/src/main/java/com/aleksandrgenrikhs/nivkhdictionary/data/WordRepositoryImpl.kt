@@ -1,7 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.data
 
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
-import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDbFavorites
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -65,7 +64,6 @@ class WordRepositoryImpl @Inject constructor(
         }
     }
 
-
     override fun getFavoritesWords(): Flow<List<Word>> {
         return wordDao.getFavorites().map { listWordDBMFavorites ->
             listWordDBMFavorites.map {
@@ -87,13 +85,5 @@ class WordRepositoryImpl @Inject constructor(
     override suspend fun isFavorite(word: Word): Boolean {
         val wordDbFavorite = wordDao.getWordById(word.id)
         return wordDbFavorite != null
-    }
-
-    override fun getCountWords(): Flow<List<WordDbFavorites>> {
-        return wordDao.getCount()
-    }
-
-    override suspend fun deleteAllWord() {
-        wordDao.deleteAll()
     }
 }
