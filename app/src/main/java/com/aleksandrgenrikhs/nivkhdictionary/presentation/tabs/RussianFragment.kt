@@ -97,8 +97,11 @@ class RussianFragment : Fragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.toastMessage.collect {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            viewModel.error.collect {
+                if (it) {
+                    Toast.makeText(requireContext(), R.string.error_message, Toast.LENGTH_LONG)
+                        .show()
+                }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {

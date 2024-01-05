@@ -14,6 +14,7 @@ class ErrorActivity : AppCompatActivity() {
         binding.refreshButton.setOnClickListener {
             val intent = Intent(this@ErrorActivity, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
         setContentView(binding.root)
     }

@@ -29,10 +29,13 @@ class MainViewModel @Inject constructor(
 
     private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _error: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _countWord: MutableStateFlow<Int> = MutableStateFlow(0)
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
     val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavoriteFragment: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val error: StateFlow<Boolean> = _error
+
     val countWord: StateFlow<Int> = _countWord
     val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -67,17 +70,19 @@ class MainViewModel @Inject constructor(
     }
 
     fun getAndSaveWords() {
+
         viewModelScope.launch {
-            if (networkConnected.isNetworkConnected(application)) {
+            if (!networkConnected.isNetworkConnected(application)) {
+                _error.value = true
+            } else {
+                _error.value = false
                 isUpdateDialogShowing.value = true
                 try {
                     interactor.getAndSaveWords()
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    _error.value = true
                 }
                 isUpdateDialogShowing.value = false
-            } else {
-                toastMessage.tryEmit(R.string.error_message)
             }
         }
     }
@@ -88,10 +93,12 @@ class MainViewModel @Inject constructor(
                 if (!isFavoriteFragment.value) {
                     if (!isWordDetail.value) {
                         interactor.getWordsFromDb().collect {
-                            _countWord.value = it.size
                             searchRepository.setWord(it)
                             searchRepository.filterWords.collect { word ->
                                 _words.value = word
+                                _countWord.value = word.size
+                                println("word = ${words.value}")
+                                println("wordSize = ${_countWord.value}")
                             }
                         }
                     }
@@ -109,7 +116,7 @@ class MainViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                e.printStackTrace()
+                _error.value = true
             }
         }
     }

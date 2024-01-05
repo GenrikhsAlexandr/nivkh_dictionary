@@ -8,11 +8,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.WordApplication
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.ActivityMainBinding
 import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,19 +35,29 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         Handler(Looper.getMainLooper()).postDelayed({
             if (viewModel.countWord.value == 0) {
-                if (networkConnected.isNetworkConnected(application)) {
-                    viewModel.viewModelScope.launch {
-                        viewModel.getAndSaveWords()
-                        startMainFragment()
-                    }
-                } else {
-                    startErrorActivity()
+                viewModel.viewModelScope.launch {
+                    viewModel.getAndSaveWords()
+                    subscribe()
+                    delay(1000)
+                    startMainFragment()
                 }
             } else {
                 startMainFragment()
             }
             binding.lottieAnimationView.isVisible = false
         }, 3000)
+    }
+
+    private fun subscribe() {
+        lifecycleScope.launch {
+            viewModel.error.collect {
+                if (!it) {
+                    startMainFragment()
+                } else {
+                    startErrorActivity()
+                }
+            }
+        }
     }
 
     private fun startErrorActivity() {
