@@ -54,6 +54,7 @@ class MainFragment : Fragment() {
         onBackIconClick()
         getQuery()
         subscribe()
+        setClickButton()
     }
 
     private fun mainToolBar() {
@@ -147,6 +148,100 @@ class MainFragment : Fragment() {
                 binding.layoutSearchView.isVisible = it
                 binding.buttonGroup.isVisible = it
             }
+        }
+    }
+
+    private fun addSymbol1(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ӷ"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol2(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ғ"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol3(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ӻ"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol4(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ӄ"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol5(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ӈ"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol6(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "р̆"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol7(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ў"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol8(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ӿ"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun addSymbol9(view: View) {
+        val newText: String =
+            binding.searchBar.text.toString() + "ӽ"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+    private fun setClickButton() {
+        binding.letter1.setOnClickListener {
+            addSymbol1(it)
+            println("addSymbol1 = $it")
+        }
+        binding.letter2.setOnClickListener {
+            addSymbol2(it)
+        }
+        binding.letter3.setOnClickListener {
+            addSymbol3(it)
+        }
+        binding.letter4.setOnClickListener {
+            addSymbol4(it)
+        }
+        binding.letter5.setOnClickListener {
+            addSymbol5(it)
+        }
+        binding.letter6.setOnClickListener {
+            addSymbol6(it)
+        }
+        binding.letter7.setOnClickListener {
+            addSymbol7(it)
+        }
+        binding.letter8.setOnClickListener {
+            addSymbol8(it)
+        }
+        binding.letter9.setOnClickListener {
+            addSymbol9(it)
         }
     }
 }

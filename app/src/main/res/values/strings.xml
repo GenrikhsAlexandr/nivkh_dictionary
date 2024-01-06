@@ -26,5 +26,18 @@
     <string name="word_not_found">Слово не найдено</string>
     <string name="dialog_update_words_title">Обновление базы слов…</string>
     <string name="error_message">Произошла ошибка, проверте подключение к интернету</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <!--Custom KeyBoard -->
+
+    ӷ
+    "ғ"
+    ӻ"
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+
+
 </resources>
