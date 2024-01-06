@@ -10,6 +10,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,6 +41,8 @@ class MainViewModel @Inject constructor(
     val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isUpdateDialogShowing: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
     val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
         extraBufferCapacity = 1,
@@ -70,53 +73,56 @@ class MainViewModel @Inject constructor(
     }
 
     fun getAndSaveWords() {
-
         viewModelScope.launch {
             if (!networkConnected.isNetworkConnected(application)) {
                 _error.value = true
             } else {
                 _error.value = false
                 isUpdateDialogShowing.value = true
+                isRvWordVisible.value = false
                 try {
                     interactor.getAndSaveWords()
                 } catch (e: Exception) {
                     _error.value = true
                 }
                 isUpdateDialogShowing.value = false
+                isRvWordVisible.value = true
+
             }
         }
     }
 
     init {
         viewModelScope.launch {
-            try {
-                if (!isFavoriteFragment.value) {
-                    if (!isWordDetail.value) {
+
+            if (!isFavoriteFragment.value) {
+                if (!isWordDetail.value) {
+                    isProgressBarVisible.value = true
+                    isRvWordVisible.value = false
+                    try {
                         interactor.getWordsFromDb().collect {
                             searchRepository.setWord(it)
                             searchRepository.filterWords.collect { word ->
                                 _words.value = word
                                 _countWord.value = word.size
-                                println("word = ${words.value}")
-                                println("wordSize = ${_countWord.value}")
+                                delay(1000)
+                                isProgressBarVisible.value = false
+                                isRvWordVisible.value = true
                             }
                         }
+                    } catch (e: Exception) {
+                        _error.value = true
                     }
-                } else {
-                    viewModelScope.launch {
-                        interactor.getFavoritesWords().collect { words ->
-                            searchRepository.setWord(words)
-                        }
-                    }
-                    viewModelScope.launch {
+                }
+            } else {
+                viewModelScope.launch {
+                    interactor.getFavoritesWords().collect { words ->
+                        searchRepository.setWord(words)
                         searchRepository.filterWords.collect {
                             _words.value = it
                         }
                     }
                 }
-
-            } catch (e: Exception) {
-                _error.value = true
             }
         }
     }

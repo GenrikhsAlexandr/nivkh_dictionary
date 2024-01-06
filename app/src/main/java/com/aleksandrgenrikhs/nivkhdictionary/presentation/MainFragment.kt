@@ -76,11 +76,11 @@ class MainFragment : Fragment() {
                     val homeFragment = HomeFragment.newInstance()
                     parentFragmentManager.commit {
                         replace(R.id.fragmentContainer, homeFragment)
+                        setReorderingAllowed(true)
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.app_name)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    viewModel.isSearchViewVisible.value = false
                     true
                 }
 
@@ -88,11 +88,11 @@ class MainFragment : Fragment() {
                     val favoriteFragment = FavoritesFragment.newInstance()
                     parentFragmentManager.commit {
                         replace(R.id.fragmentContainer, favoriteFragment)
+                        setReorderingAllowed(true)
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.favorites)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    viewModel.isSearchViewVisible.value = false
                     true
                 }
 
@@ -100,11 +100,11 @@ class MainFragment : Fragment() {
                     val aboutFragment = AboutFragment.newInstance()
                     parentFragmentManager.commit {
                         replace(R.id.fragmentContainer, aboutFragment)
+                        setReorderingAllowed(true)
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.about)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
-                    viewModel.isSearchViewVisible.value = false
                     true
                 }
 

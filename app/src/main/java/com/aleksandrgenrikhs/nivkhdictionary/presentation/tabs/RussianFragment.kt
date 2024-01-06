@@ -90,8 +90,6 @@ class RussianFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
-                binding.progressBar.isVisible = words.isEmpty()
-                binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
                 println("wordsForAdapter = $words")
             }
@@ -112,6 +110,16 @@ class RussianFragment : Fragment() {
                     updateDialog?.dismiss()
                     updateDialog = null
                 }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isProgressBarVisible.collect {
+                binding.progressBar.isVisible = it
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isRvWordVisible.collect {
+                binding.rvWord.isVisible = it
             }
         }
     }
