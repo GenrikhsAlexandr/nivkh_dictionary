@@ -10,7 +10,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -94,38 +93,37 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-
-            if (!isFavoriteFragment.value) {
-                if (!isWordDetail.value) {
-                    isProgressBarVisible.value = true
-                    isRvWordVisible.value = false
-                    try {
+            try {
+                if (!isFavoriteFragment.value) {
+                    if (!isWordDetail.value) {
+                        isProgressBarVisible.value = true
+                        isRvWordVisible.value = false
                         interactor.getWordsFromDb().collect {
-                            searchRepository.setWord(it)
+                            searchRepository.allWord.value = it
                             searchRepository.filterWords.collect { word ->
                                 _words.value = word
                                 _countWord.value = word.size
-                                delay(1000)
                                 isProgressBarVisible.value = false
                                 isRvWordVisible.value = true
                             }
                         }
-                    } catch (e: Exception) {
-                        _error.value = true
                     }
-                }
-            } else {
-                viewModelScope.launch {
+                } else {
                     interactor.getFavoritesWords().collect { words ->
-                        searchRepository.setWord(words)
+                        searchRepository.allWord.value = words
                         searchRepository.filterWords.collect {
                             _words.value = it
+                            println(" _wordInit= $it")
                         }
                     }
                 }
+            } catch (e: Exception) {
+                _error.value = true
+
             }
         }
     }
+
 
     suspend fun onFavoriteButtonClicked() {
         isIconClick.value = !isIconClick.value
@@ -156,7 +154,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onDestroy() {
-        _words.value = emptyList()
+        searchRepository.allWord.value = emptyList()
         isSearchViewVisible.value = false
         println(
             "onDestroyWords = ${_words.value}" +

@@ -79,6 +79,7 @@ class RussianFragment : Fragment() {
     }
 
     private fun refresh() {
+        println("swipeRefreshRu")
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {

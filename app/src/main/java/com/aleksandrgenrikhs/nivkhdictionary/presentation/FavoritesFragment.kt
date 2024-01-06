@@ -73,6 +73,7 @@ class FavoritesFragment : Fragment() {
                 binding.tvEmpty.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
+                println("adapterFavorites = $words")
             }
         }
     }

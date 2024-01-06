@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 
 object SearchRepository {
     private val _searchRequest: MutableStateFlow<String> = MutableStateFlow("")
-    private val allWord: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
+    val allWord: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
 
     val filterWords: StateFlow<List<Word>> = combine(
         _searchRequest,
@@ -37,10 +37,6 @@ object SearchRepository {
             }
         }
     }.stateIn(CoroutineScope(Dispatchers.IO), SharingStarted.Eagerly, emptyList())
-
-    fun setWord(word: List<Word>) {
-        allWord.value = word
-    }
 
     fun setSearchRequest(request: String) {
         _searchRequest.value = request
