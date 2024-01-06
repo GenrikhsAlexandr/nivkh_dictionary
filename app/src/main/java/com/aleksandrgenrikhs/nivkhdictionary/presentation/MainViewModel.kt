@@ -154,4 +154,13 @@ class MainViewModel @Inject constructor(
             _isFavorite.value = interactor.isFavorite(word)
         }
     }
+
+    fun onDestroy() {
+        _words.value = emptyList()
+        isSearchViewVisible.value = false
+        println(
+            "onDestroyWords = ${_words.value}" +
+                    "words = ${words.value}"
+        )
+    }
 }

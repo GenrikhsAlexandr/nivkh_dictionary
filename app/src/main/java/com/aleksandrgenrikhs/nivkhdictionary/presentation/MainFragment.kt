@@ -61,6 +61,7 @@ class MainFragment : Fragment() {
             return@setOnMenuItemClickListener when (item.itemId) {
                 R.id.search -> {
                     viewModel.isSearchViewVisible.value = true
+
                     true
                 }
 
@@ -81,6 +82,7 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.app_name)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
+                    viewModel.isSearchViewVisible.value = false
                     true
                 }
 
@@ -93,6 +95,7 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.favorites)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
+                    viewModel.isSearchViewVisible.value = false
                     true
                 }
 
@@ -105,6 +108,7 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.about)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
+                    viewModel.isSearchViewVisible.value = false
                     true
                 }
 
@@ -141,6 +145,7 @@ class MainFragment : Fragment() {
                     imm.hideSoftInputFromWindow(binding.searchBar.windowToken, 0)
                 }
                 binding.layoutSearchView.isVisible = it
+                binding.buttonGroup.isVisible = it
             }
         }
     }

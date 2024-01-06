@@ -35,10 +35,10 @@
     <LinearLayout
         android:id="@+id/layoutSearchView"
         android:layout_width="match_parent"
-        android:layout_height="74dp"
+        android:layout_height="64dp"
         android:background="@color/white"
         android:orientation="horizontal"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -64,6 +64,7 @@
             android:textColorHint="@color/ic_launcher_background"
             app:boxBackgroundColor="@color/white"
             app:boxBackgroundMode="filled"
+            app:boxStrokeColor="@color/ic_launcher_background"
             app:counterTextColor="@color/ic_launcher_background"
             app:cursorColor="@color/ic_launcher_background"
             app:endIconMode="clear_text"
@@ -81,6 +82,171 @@
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearchView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/letter1"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ӷ"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+            <Button
+                android:id="@+id/letter2"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ғ"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+            <Button
+                android:id="@+id/letter3"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ӻ"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+            <Button
+                android:id="@+id/letter4"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ӄ"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+            <Button
+                android:id="@+id/letter5"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ӈ"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/letter6"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="р̆"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+            <Button
+                android:id="@+id/letter7"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ў"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+            <Button
+                android:id="@+id/letter8"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ӿ"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+
+            <Button
+                android:id="@+id/letter9"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="8dp"
+                android:backgroundTint="#94E9FA"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="ӽ"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/dark_text"
+                android:textStyle="bold"
+                app:strokeColor="@color/ic_launcher_background" />
+        </LinearLayout>
+    </LinearLayout>
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
@@ -107,7 +273,8 @@
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBar"
+        app:layout_constraintTop_toBottomOf="@id/buttonGroup"
+        app:layout_goneMarginTop="64dp"
         tools:layout="@layout/fragment_home">
 
     </androidx.fragment.app.FragmentContainerView>

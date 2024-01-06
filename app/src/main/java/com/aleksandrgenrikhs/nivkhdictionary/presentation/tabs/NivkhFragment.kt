@@ -90,6 +90,7 @@ class NivkhFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
                 adapter.submitList(words)
+                println("wordAdapter = $words")
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -137,5 +138,7 @@ class NivkhFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        viewModel.onDestroy()
+        println("onDestroyViewNivkh")
     }
 }
