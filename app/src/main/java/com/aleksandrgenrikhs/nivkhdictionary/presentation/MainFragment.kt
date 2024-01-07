@@ -151,97 +151,108 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun addSymbol1(view: View) {
+    private fun addSymbol1() {
         val newText: String =
             binding.searchBar.text.toString() + "ӷ"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol2(view: View) {
+    private fun addSymbol2() {
         val newText: String =
             binding.searchBar.text.toString() + "ғ"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol3(view: View) {
+    private fun addSymbol3() {
         val newText: String =
             binding.searchBar.text.toString() + "ӻ"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol4(view: View) {
+    private fun addSymbol4() {
         val newText: String =
             binding.searchBar.text.toString() + "ӄ"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol5(view: View) {
+    private fun addSymbol5() {
         val newText: String =
             binding.searchBar.text.toString() + "ӈ"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol6(view: View) {
+    private fun addSymbol6() {
         val newText: String =
             binding.searchBar.text.toString() + "р̆"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol7(view: View) {
+    private fun addSymbol7() {
         val newText: String =
             binding.searchBar.text.toString() + "ў"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol8(view: View) {
+    private fun addSymbol8() {
         val newText: String =
             binding.searchBar.text.toString() + "ӿ"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
-    private fun addSymbol9(view: View) {
+    private fun addSymbol9() {
         val newText: String =
             binding.searchBar.text.toString() + "ӽ"
         binding.searchBar.setText(newText)
         binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
     }
 
+    private fun addSymbol10() {
+        val newText: String =
+            binding.searchBar.text.toString() + "’"
+        binding.searchBar.setText(newText)
+        binding.searchBar.text?.let { binding.searchBar.setSelection(it.length) }
+    }
+
+
     private fun setClickButton() {
         binding.letter1.setOnClickListener {
-            addSymbol1(it)
+            addSymbol1()
             println("addSymbol1 = $it")
         }
         binding.letter2.setOnClickListener {
-            addSymbol2(it)
+            addSymbol2()
         }
         binding.letter3.setOnClickListener {
-            addSymbol3(it)
+            addSymbol3()
         }
         binding.letter4.setOnClickListener {
-            addSymbol4(it)
+            addSymbol4()
         }
         binding.letter5.setOnClickListener {
-            addSymbol5(it)
+            addSymbol5()
         }
         binding.letter6.setOnClickListener {
-            addSymbol6(it)
+            addSymbol6()
         }
         binding.letter7.setOnClickListener {
-            addSymbol7(it)
+            addSymbol7()
         }
         binding.letter8.setOnClickListener {
-            addSymbol8(it)
+            addSymbol8()
         }
         binding.letter9.setOnClickListener {
-            addSymbol9(it)
+            addSymbol9()
+        }
+        binding.letter10.setOnClickListener {
+            addSymbol10()
         }
     }
 }
