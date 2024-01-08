@@ -259,10 +259,8 @@
                 android:textColor="@color/dark_text"
                 android:textStyle="bold"
                 app:strokeColor="@color/ic_launcher_background" />
-
         </LinearLayout>
     </LinearLayout>
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

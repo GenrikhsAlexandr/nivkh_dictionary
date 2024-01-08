@@ -39,7 +39,6 @@ class MainViewModel @Inject constructor(
     val countWord: StateFlow<Int> = _countWord
     val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isUpdateDialogShowing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> = _isFavorite
@@ -74,19 +73,16 @@ class MainViewModel @Inject constructor(
     fun getAndSaveWords() {
         viewModelScope.launch {
             if (!networkConnected.isNetworkConnected(application)) {
-                _error.value = true
+                toastMessage.tryEmit(R.string.error_message)
             } else {
                 _error.value = false
-                isUpdateDialogShowing.value = true
-                isRvWordVisible.value = false
+                toastMessage.tryEmit(R.string.dialog_update_words_title)
                 try {
                     interactor.getAndSaveWords()
                 } catch (e: Exception) {
-                    _error.value = true
+                    toastMessage.tryEmit(R.string.error_message)
                 }
-                isUpdateDialogShowing.value = false
-                isRvWordVisible.value = true
-
+                toastMessage.tryEmit(R.string.update_words_title)
             }
         }
     }
@@ -118,7 +114,7 @@ class MainViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                _error.value = true
+                toastMessage.tryEmit(R.string.error_message)
 
             }
         }

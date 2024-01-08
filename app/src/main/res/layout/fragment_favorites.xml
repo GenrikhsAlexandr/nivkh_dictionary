@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFF"
-        tools:context=".presentation.list.FavoritesFragment">
+    android:layout_height="match_parent"
+    android:background="#FFFF">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvWord"
@@ -23,12 +17,12 @@
 
         <TextView
             android:id="@+id/tvEmpty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:layout_gravity="center"
             android:text="@string/empty"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textColor="@color/buttonSheet"
             android:visibility="visible" />
-    </FrameLayout>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</FrameLayout>

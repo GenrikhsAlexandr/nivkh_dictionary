@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,7 +19,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +40,6 @@ class EnglishFragment : Fragment() {
             )
         }
     )
-    private var updateDialog: AlertDialog? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -103,16 +100,6 @@ class EnglishFragment : Fragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isUpdateDialogShowing.collect {
-                if (it) {
-                    view?.let { view -> showUpdateDialog(view) }
-                } else {
-                    updateDialog?.dismiss()
-                    updateDialog = null
-                }
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isProgressBarVisible.collect {
                 binding.progressBar.isVisible = it
             }
@@ -122,20 +109,12 @@ class EnglishFragment : Fragment() {
                 binding.rvWord.isVisible = it
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.toastMessage.collect { message ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
-
-    private fun showUpdateDialog(view: View) {
-        updateDialog = MaterialAlertDialogBuilder(
-            view.context,
-            R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-        )
-            .setMessage(R.string.dialog_update_words_title)
-            .setCancelable(false)
-            .setView(R.layout.dialog_update_words)
-            .create()
-        updateDialog?.show()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
