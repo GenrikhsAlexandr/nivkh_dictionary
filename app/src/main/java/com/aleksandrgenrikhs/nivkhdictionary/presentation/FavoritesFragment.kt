@@ -58,18 +58,26 @@ class FavoritesFragment : Fragment() {
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.rvWord.adapter = adapter
+        getFavoritesWords()
+        getLocale()
         subscribe()
-        getWord()
     }
 
-    private fun getWord() {
+    private fun getLocale() {
         val locale = "nv"
         viewModel.setLocale(locale)
     }
 
+    private fun getFavoritesWords() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getFavoritesWords()
+        }
+    }
+
+
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.words.collect { words ->
+            viewModel.favoritesWords.collect { words ->
                 binding.tvEmpty.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)

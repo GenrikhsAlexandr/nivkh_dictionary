@@ -95,7 +95,7 @@ class MainFragment : Fragment() {
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.favorites)
                     }
-                    binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
+                    binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
                     viewModel.isSearchViewVisible.value = false
                     true
                 }
@@ -225,7 +225,6 @@ class MainFragment : Fragment() {
     private fun setClickButton() {
         binding.letter1.setOnClickListener {
             addSymbol1()
-            println("addSymbol1 = $it")
         }
         binding.letter2.setOnClickListener {
             addSymbol2()

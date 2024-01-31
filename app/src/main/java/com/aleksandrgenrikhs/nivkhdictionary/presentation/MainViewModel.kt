@@ -27,16 +27,18 @@ class MainViewModel @Inject constructor(
     private val networkConnected: NetworkConnected
 ) : ViewModel() {
 
-    private val _words: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
+    private val _allWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
+
+    private val _favoritesWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     private val _error: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val _countWord: MutableStateFlow<Int> = MutableStateFlow(0)
+    val error: StateFlow<Boolean> = _error
+
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
     val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavoriteFragment: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val error: StateFlow<Boolean> = _error
 
-    val countWord: StateFlow<Int> = _countWord
     val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -48,7 +50,7 @@ class MainViewModel @Inject constructor(
     )
     private lateinit var favoritesWord: Word
 
-    val words: StateFlow<List<WordListItem>> = _words.map { words ->
+    val words: StateFlow<List<WordListItem>> = _allWords.map { words ->
         words
             .mapNotNull { word ->
                 WordListItem(
@@ -59,14 +61,69 @@ class MainViewModel @Inject constructor(
             }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+
+    val favoritesWords: StateFlow<List<WordListItem>> = _favoritesWords.map { words ->
+        words
+            .mapNotNull { word ->
+                WordListItem(
+                    word = word,
+                    title = word.locales[currentLocale.value.language]?.value
+                        ?: return@mapNotNull null
+                )
+            }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+
     fun onSearchQuery(query: String) {
         searchRepository.setSearchRequest(query)
     }
 
-    fun setLocale(locale: String) {
+    init {
         viewModelScope.launch {
-            currentLocale.value = Locale(locale)
-            println(" setLocale= ${currentLocale.value}")
+            try {
+                isProgressBarVisible.value = true
+                isRvWordVisible.value = false
+                interactor.getAndSaveWords()
+                isProgressBarVisible.value = false
+                isRvWordVisible.value = true
+            } catch (e: Exception) {
+                toastMessage.tryEmit(R.string.error_message)
+            }
+
+        }
+        getWordBD()
+        getWordsFilter()
+    }
+
+    private fun getWordBD() {
+        viewModelScope.launch {
+            isProgressBarVisible.value = true
+            isRvWordVisible.value = false
+            interactor.getWordsFromDb().collect {
+                searchRepository.allWord.value = it
+                isProgressBarVisible.value = false
+                isRvWordVisible.value = true
+            }
+        }
+    }
+
+    private fun getWordsFilter() {
+        viewModelScope.launch {
+            searchRepository.filterWords.collect { filterWords ->
+                _allWords.value = filterWords
+            }
+        }
+    }
+
+    fun getFavoritesWords() {
+        viewModelScope.launch {
+            isProgressBarVisible.value = true
+            isRvWordVisible.value = false
+            interactor.getFavoritesWords().collect {
+                _favoritesWords.value = it
+                isProgressBarVisible.value = false
+                isRvWordVisible.value = true
+            }
         }
     }
 
@@ -87,39 +144,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    init {
+    fun setLocale(locale: String) {
         viewModelScope.launch {
-            try {
-                if (!isFavoriteFragment.value) {
-                    if (!isWordDetail.value) {
-                        isProgressBarVisible.value = true
-                        isRvWordVisible.value = false
-                        interactor.getWordsFromDb().collect {
-                            searchRepository.allWord.value = it
-                            searchRepository.filterWords.collect { word ->
-                                _words.value = word
-                                _countWord.value = word.size
-                                isProgressBarVisible.value = false
-                                isRvWordVisible.value = true
-                            }
-                        }
-                    }
-                } else {
-                    interactor.getFavoritesWords().collect { words ->
-                        searchRepository.allWord.value = words
-                        searchRepository.filterWords.collect {
-                            _words.value = it
-                            println(" _wordInit= $it")
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                toastMessage.tryEmit(R.string.error_message)
-
-            }
+            currentLocale.value = Locale(locale)
+            println(" setLocale= ${currentLocale.value}")
         }
     }
-
 
     suspend fun onFavoriteButtonClicked() {
         isIconClick.value = !isIconClick.value
@@ -152,9 +182,5 @@ class MainViewModel @Inject constructor(
     fun onDestroy() {
         searchRepository.allWord.value = emptyList()
         isSearchViewVisible.value = false
-        println(
-            "onDestroyWords = ${_words.value}" +
-                    "words = ${words.value}"
-        )
     }
 }

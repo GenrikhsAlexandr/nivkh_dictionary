@@ -14,7 +14,7 @@ class WordInteractor @Inject constructor(
 
     suspend fun getAndSaveWords() = repository.getAndSaveWords()
 
-    fun getWordsFromDb() = repository.getWordsFromDb()
+    fun getWordsFromDb(): Flow<List<Word>> = repository.getWordsFromDb()
 
     suspend fun isFavorite(word: Word) = repository.isFavorite(word)
 }

@@ -6,6 +6,8 @@ interface WordRepository {
 
     fun getFavoritesWords(): Flow<List<Word>>
 
+    suspend fun getWords(): List<Word>
+
     fun getWordsFromDb(): Flow<List<Word>>
 
     suspend fun saveFavoriteWord(word: Word)
@@ -15,4 +17,6 @@ interface WordRepository {
     suspend fun getAndSaveWords(): List<Word>
 
     suspend fun isFavorite(word: Word): Boolean
+
+    fun error(): Boolean
 }

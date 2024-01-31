@@ -9,12 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.WordApplication
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.ActivityMainBinding
-import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
-import kotlinx.coroutines.delay
+import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModel: MainViewModel
 
     @Inject
-    lateinit var networkConnected: NetworkConnected
+    lateinit var reposutory: WordRepository
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,28 +32,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Handler(Looper.getMainLooper()).postDelayed({
-            if (viewModel.countWord.value == 0) {
-                viewModel.viewModelScope.launch {
-                    viewModel.getAndSaveWords()
-                    subscribe()
-                    delay(1000)
-                    startMainFragment()
-                }
-            } else {
-                startMainFragment()
-            }
+            error()
             binding.lottieAnimationView.isVisible = false
         }, 3000)
     }
 
-    private fun subscribe() {
+    private fun error() {
         lifecycleScope.launch {
-            viewModel.error.collect {
-                if (!it) {
-                    startMainFragment()
-                } else {
-                    startErrorActivity()
-                }
+            if (!reposutory.error()) {
+                startMainFragment()
+            } else {
+                startErrorActivity()
             }
         }
     }

@@ -26,10 +26,14 @@ interface DataModule {
         fun provideWordRepository(
             wordMapper: WordMapper,
             wordDao: WordDao,
+            networkConnected: NetworkConnected,
+            application: Application,
         ): WordRepository {
             return WordRepositoryImpl(
                 wordDao,
                 wordMapper,
+                networkConnected,
+                application
             )
         }
 
