@@ -3,7 +3,6 @@ package com.aleksandrgenrikhs.nivkhdictionary.di
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
-import com.aleksandrgenrikhs.nivkhdictionary.data.WordMapper
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.AppDatabase
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
@@ -18,24 +17,13 @@ import javax.inject.Singleton
 
 @Module
 interface DataModule {
+    @Binds
+    @Singleton
+    fun bindsWordRepository(
+        impl: WordRepositoryImpl
+    ): WordRepository
 
     companion object {
-
-        @Provides
-        @Singleton
-        fun provideWordRepository(
-            wordMapper: WordMapper,
-            wordDao: WordDao,
-            networkConnected: NetworkConnected,
-            application: Application,
-        ): WordRepository {
-            return WordRepositoryImpl(
-                wordDao,
-                wordMapper,
-                networkConnected,
-                application
-            )
-        }
 
         @Provides
         @Singleton

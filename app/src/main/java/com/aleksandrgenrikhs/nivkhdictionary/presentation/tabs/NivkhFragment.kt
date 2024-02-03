@@ -75,7 +75,6 @@ class NivkhFragment : Fragment() {
     }
 
     private fun refresh() {
-        println("swipeRefresh")
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
@@ -88,7 +87,6 @@ class NivkhFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
                 adapter.submitList(words)
-                println("wordAdapter = $words")
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -112,6 +110,5 @@ class NivkhFragment : Fragment() {
         super.onDestroyView()
         _binding = null
         viewModel.onDestroy()
-        println("onDestroyViewNivkh")
     }
 }

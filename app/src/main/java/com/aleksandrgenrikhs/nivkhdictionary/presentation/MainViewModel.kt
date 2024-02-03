@@ -28,6 +28,8 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _allWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
+    private val _searchWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
+    private val _searchFavoritesWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
 
     private val _favoritesWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -50,7 +52,7 @@ class MainViewModel @Inject constructor(
     )
     private lateinit var favoritesWord: Word
 
-    val words: StateFlow<List<WordListItem>> = _allWords.map { words ->
+    val words: StateFlow<List<WordListItem>> = _searchWords.map { words ->
         words
             .mapNotNull { word ->
                 WordListItem(
@@ -61,8 +63,7 @@ class MainViewModel @Inject constructor(
             }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-
-    val favoritesWords: StateFlow<List<WordListItem>> = _favoritesWords.map { words ->
+    val favoritesWords: StateFlow<List<WordListItem>> = _searchFavoritesWords.map { words ->
         words
             .mapNotNull { word ->
                 WordListItem(
@@ -72,27 +73,19 @@ class MainViewModel @Inject constructor(
                 )
             }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-
-    fun onSearchQuery(query: String) {
-        searchRepository.setSearchRequest(query)
-    }
 
     init {
         viewModelScope.launch {
             try {
-                isProgressBarVisible.value = true
-                isRvWordVisible.value = false
                 interactor.getAndSaveWords()
-                isProgressBarVisible.value = false
-                isRvWordVisible.value = true
             } catch (e: Exception) {
                 toastMessage.tryEmit(R.string.error_message)
             }
-
         }
         getWordBD()
-        getWordsFilter()
+        getFavoritesWords()
+        getWordFromSearchRepository()
+        getFavoritesFromSearchRepository()
     }
 
     private fun getWordBD() {
@@ -100,29 +93,43 @@ class MainViewModel @Inject constructor(
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
             interactor.getWordsFromDb().collect {
-                searchRepository.allWord.value = it
+                _allWords.value = it
                 isProgressBarVisible.value = false
                 isRvWordVisible.value = true
             }
         }
-    }
-
-    private fun getWordsFilter() {
         viewModelScope.launch {
-            searchRepository.filterWords.collect { filterWords ->
-                _allWords.value = filterWords
+            _allWords.collect {
+                searchRepository.allWord.value = it
             }
         }
     }
 
-    fun getFavoritesWords() {
+    private fun getFavoritesWords() {
         viewModelScope.launch {
-            isProgressBarVisible.value = true
-            isRvWordVisible.value = false
             interactor.getFavoritesWords().collect {
                 _favoritesWords.value = it
-                isProgressBarVisible.value = false
-                isRvWordVisible.value = true
+            }
+        }
+        viewModelScope.launch {
+            _favoritesWords.collect {
+                searchRepository.favoritesWords.value = it
+            }
+        }
+    }
+
+    fun getWordFromSearchRepository() {
+        viewModelScope.launch {
+            searchRepository.filterWords.collect {
+                _searchWords.value = it
+            }
+        }
+    }
+
+    fun getFavoritesFromSearchRepository() {
+        viewModelScope.launch {
+            searchRepository.filterFavoritesWords.collect {
+                _searchFavoritesWords.value = it
             }
         }
     }
@@ -147,7 +154,6 @@ class MainViewModel @Inject constructor(
     fun setLocale(locale: String) {
         viewModelScope.launch {
             currentLocale.value = Locale(locale)
-            println(" setLocale= ${currentLocale.value}")
         }
     }
 
@@ -177,6 +183,10 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             _isFavorite.value = interactor.isFavorite(word)
         }
+    }
+
+    fun onSearchQuery(query: String) {
+        searchRepository.setSearchRequest(query)
     }
 
     fun onDestroy() {

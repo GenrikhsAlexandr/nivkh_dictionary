@@ -95,7 +95,7 @@ class MainFragment : Fragment() {
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.favorites)
                     }
-                    binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
+                    binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
                     viewModel.isSearchViewVisible.value = false
                     true
                 }
