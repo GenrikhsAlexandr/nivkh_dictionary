@@ -120,7 +120,6 @@ class WordDetailsBottomSheet(
     private fun createPlayer(): MediaPlayer? {
         val nvLocale = word.locales[Language.NIVKH.code] ?: return null
         val url = "${nvLocale.audioPath}"
-        println("uri = $url")
         return MediaPlayer.create(context, Uri.parse(url))
     }
 

@@ -1,6 +1,5 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -8,7 +7,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
-import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
+import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +22,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val interactor: WordInteractor,
     private val searchRepository: SearchRepository,
-    private val application: Application,
-    private val networkConnected: NetworkConnected
 ) : ViewModel() {
 
     private val _allWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
@@ -33,9 +30,6 @@ class MainViewModel @Inject constructor(
 
     private val _favoritesWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-    private val _error: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val error: StateFlow<Boolean> = _error
 
     private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
     val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -50,6 +44,7 @@ class MainViewModel @Inject constructor(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
+
     private lateinit var favoritesWord: Word
 
     val words: StateFlow<List<WordListItem>> = _searchWords.map { words ->
@@ -75,24 +70,21 @@ class MainViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
-        viewModelScope.launch {
-            try {
-                interactor.getAndSaveWords()
-            } catch (e: Exception) {
-                toastMessage.tryEmit(R.string.error_message)
-            }
-        }
-        getWordBD()
         getFavoritesWords()
         getWordFromSearchRepository()
         getFavoritesFromSearchRepository()
+        getWords()
     }
 
-    private fun getWordBD() {
+    suspend fun getWordStartApp(): ResultState<List<Word>> {
+        return interactor.getWordStartApp()
+    }
+
+    private fun getWords() {
         viewModelScope.launch {
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
-            interactor.getWordsFromDb().collect {
+            interactor.getWords().collect {
                 _allWords.value = it
                 isProgressBarVisible.value = false
                 isRvWordVisible.value = true
@@ -100,7 +92,7 @@ class MainViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _allWords.collect {
-                searchRepository.allWord.value = it
+                searchRepository.allWords.value = it
             }
         }
     }
@@ -118,37 +110,24 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getWordFromSearchRepository() {
+    private fun getWordFromSearchRepository() {
         viewModelScope.launch {
-            searchRepository.filterWords.collect {
+            searchRepository.filteredWords.collect {
                 _searchWords.value = it
             }
         }
     }
 
-    fun getFavoritesFromSearchRepository() {
+    private fun getFavoritesFromSearchRepository() {
         viewModelScope.launch {
-            searchRepository.filterFavoritesWords.collect {
+            searchRepository.filteredFavoritesWords.collect {
                 _searchFavoritesWords.value = it
             }
         }
     }
 
-    fun getAndSaveWords() {
-        viewModelScope.launch {
-            if (!networkConnected.isNetworkConnected(application)) {
-                toastMessage.tryEmit(R.string.error_message)
-            } else {
-                _error.value = false
-                toastMessage.tryEmit(R.string.dialog_update_words_title)
-                try {
-                    interactor.getAndSaveWords()
-                } catch (e: Exception) {
-                    toastMessage.tryEmit(R.string.error_message)
-                }
-                toastMessage.tryEmit(R.string.update_words_title)
-            }
-        }
+    suspend fun updateWords(): ResultState<List<Word>> {
+        return interactor.updateWord()
     }
 
     fun setLocale(locale: String) {
@@ -190,7 +169,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onDestroy() {
-        searchRepository.allWord.value = emptyList()
+        searchRepository.allWords.value = emptyList()
         isSearchViewVisible.value = false
     }
 }

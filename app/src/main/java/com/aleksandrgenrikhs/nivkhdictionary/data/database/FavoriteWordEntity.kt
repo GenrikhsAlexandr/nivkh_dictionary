@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "word")
-data class WordDbFavorites(
+data class FavoriteWordEntity(
     @PrimaryKey(autoGenerate = false)
     val id: String,
     val nv: String,

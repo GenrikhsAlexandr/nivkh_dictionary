@@ -1,6 +1,7 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +17,12 @@ import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.ErrorActivity
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
+import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
+import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.NIVKH
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -67,19 +71,45 @@ class NivkhFragment : Fragment() {
         subscribe()
         getLocale()
         refresh()
+        getWordFirstStartApp()
     }
 
     private fun getLocale() {
-        val locale = "nv"
+        val locale = NIVKH
         viewModel.setLocale(locale)
+    }
+
+    private fun getWordFirstStartApp() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            when (viewModel.getWordStartApp()) {
+                is ResultState.Error -> startErrorActivity()
+                else -> {}
+            }
+        }
     }
 
     private fun refresh() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
-            viewModel.getAndSaveWords()
-            swipeRefresh.isRefreshing = false
+            viewLifecycleOwner.lifecycleScope.launch {
+                when (val updateWord = viewModel.updateWords()) {
+                    is ResultState.Success -> {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.update_words_title,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    is ResultState.Error -> Toast.makeText(
+                        requireContext(),
+                        getString(updateWord.message),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                swipeRefresh.isRefreshing = false
+            }
         }
     }
 
@@ -92,16 +122,12 @@ class NivkhFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isProgressBarVisible.collect {
                 binding.progressBar.isVisible = it
+                println("progressBar =$it")
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isRvWordVisible.collect {
                 binding.rvWord.isVisible = it
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.toastMessage.collect { message ->
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -110,5 +136,10 @@ class NivkhFragment : Fragment() {
         super.onDestroyView()
         _binding = null
         viewModel.onDestroy()
+    }
+
+    private fun startErrorActivity() {
+        val intent = Intent(requireContext(), ErrorActivity::class.java)
+        startActivity(intent)
     }
 }

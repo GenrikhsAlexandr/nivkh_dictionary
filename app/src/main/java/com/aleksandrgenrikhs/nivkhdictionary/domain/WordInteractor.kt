@@ -1,5 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.domain
 
+import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -12,9 +13,11 @@ class WordInteractor @Inject constructor(
 
     suspend fun deleteFavoriteWord(word: Word) = repository.deleteFavoriteWord(word)
 
-    suspend fun getAndSaveWords() = repository.getAndSaveWords()
+    suspend fun getWordStartApp(): ResultState<List<Word>> = repository.getWordStartApp()
 
-    fun getWordsFromDb(): Flow<List<Word>> = repository.getWordsFromDb()
+    fun getWords(): Flow<List<Word>> = repository.getWords()
+
+    suspend fun updateWord() = repository.updateWords()
 
     suspend fun isFavorite(word: Word) = repository.isFavorite(word)
 }

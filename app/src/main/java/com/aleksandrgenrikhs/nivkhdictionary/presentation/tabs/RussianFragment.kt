@@ -11,14 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentRussianBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
+import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.RUSSIAN
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -67,42 +66,24 @@ class RussianFragment : Fragment() {
         binding.rvWord.adapter = adapter
         subscribe()
         getLocale()
-        refresh()
     }
 
     private fun getLocale() {
-        val locale = "ru"
+        val locale = RUSSIAN
         viewModel.setLocale(locale)
-    }
-
-    private fun refresh() {
-        println("swipeRefreshRu")
-        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
-        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
-        swipeRefresh.setOnRefreshListener {
-            viewModel.getAndSaveWords()
-            swipeRefresh.isRefreshing = false
-        }
     }
 
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
                 adapter.submitList(words)
-                println("wordsForAdapter = $words")
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.error.collect {
-                if (it) {
-                    Toast.makeText(requireContext(), R.string.error_message, Toast.LENGTH_LONG)
-                        .show()
-                }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isProgressBarVisible.collect {
                 binding.progressBar.isVisible = it
+                println("progressBar =$it")
+
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {

@@ -3,8 +3,8 @@ package com.aleksandrgenrikhs.nivkhdictionary.data.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "all_word")
-data class AllWordsDb(
+@Entity(tableName = "words")
+data class WordEntity(
     @PrimaryKey(autoGenerate = false)
     val id: String,
     val nv: String,

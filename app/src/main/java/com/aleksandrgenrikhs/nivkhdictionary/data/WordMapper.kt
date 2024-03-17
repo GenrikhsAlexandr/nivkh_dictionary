@@ -1,28 +1,33 @@
 package com.aleksandrgenrikhs.nivkhdictionary.data
 
-import com.aleksandrgenrikhs.nivkhdictionary.data.database.AllWordsDb
-import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDbFavorites
+import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl.Companion.BASE_URL
+import com.aleksandrgenrikhs.nivkhdictionary.data.database.FavoriteWordEntity
+import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordEntity
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.LocaleData
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
+import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.ENGLISH
+import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.NIVKH
+import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.RUSSIAN
 import javax.inject.Inject
 
-const val HOST_URL = "http://bibl-nogl-dictionary.ru/data"
+const val HOST_URL = "${BASE_URL}/data"
 
 class WordMapper @Inject constructor() {
+
     fun mapToWord(wordDto: WordDto): Word? {
         return Word(
             id = wordDto.id ?: return null,
             locales = buildMap {
                 put(
-                    "nv", LocaleData(
+                    NIVKH, LocaleData(
                         locale = Language.NIVKH,
                         value = wordDto.nv ?: return null
                     )
                 )
                 wordDto.ru?.let {
                     put(
-                        "ru", LocaleData(
+                        RUSSIAN, LocaleData(
                             locale = Language.RUSSIAN,
                             value = it
                         )
@@ -30,7 +35,7 @@ class WordMapper @Inject constructor() {
                 }
                 wordDto.en?.let {
                     put(
-                        "en", LocaleData(
+                        ENGLISH, LocaleData(
                             locale = Language.ENGLISH,
                             value = it
                         )
@@ -40,44 +45,43 @@ class WordMapper @Inject constructor() {
         )
     }
 
-    fun mapWordDbFavoritesToWord(wordDbFavorites: WordDbFavorites): Word {
+    fun mapFavoriteWordEntityToWord(favoriteWord: FavoriteWordEntity): Word {
         val localesMap = mutableMapOf<String, LocaleData>()
-        localesMap["nv"] = LocaleData(
-            Language.NIVKH, wordDbFavorites.nv, "$HOST_URL/audio/${wordDbFavorites.id}.mp3"
-
+        localesMap[NIVKH] = LocaleData(
+            Language.NIVKH, favoriteWord.nv, "$HOST_URL/nivkhaudio/${favoriteWord.id}.mp3"
         )
-        wordDbFavorites.ru?.let {
-            localesMap["ru"] = LocaleData(Language.RUSSIAN, it)
+        favoriteWord.ru?.let {
+            localesMap[RUSSIAN] = LocaleData(Language.RUSSIAN, it)
         }
-        wordDbFavorites.en?.let {
-            localesMap["en"] = LocaleData(Language.ENGLISH, it)
+        favoriteWord.en?.let {
+            localesMap[ENGLISH] = LocaleData(Language.ENGLISH, it)
         }
-        return Word(id = wordDbFavorites.id, locales = localesMap)
+        return Word(id = favoriteWord.id, locales = localesMap)
     }
 
-    fun mapWordToWordDbFavorites(word: Word) = WordDbFavorites(
+    fun mapWordToFavoriteWordEntity(word: Word) = FavoriteWordEntity(
         id = word.id,
         nv = word.locales[Language.NIVKH.code]?.value ?: "",
         ru = word.locales[Language.RUSSIAN.code]?.value ?: "",
         en = word.locales[Language.ENGLISH.code]?.value ?: "",
     )
 
-    fun mapAllWordsDbToWord(allWordsDb: AllWordsDb): Word {
+    fun mapWordEntityToWord(wordEntity: WordEntity): Word {
         val localesMap = mutableMapOf<String, LocaleData>()
-        localesMap["nv"] = LocaleData(
-            Language.NIVKH, allWordsDb.nv,
-            "$HOST_URL/audio/${allWordsDb.id}.mp3"
+        localesMap[NIVKH] = LocaleData(
+            Language.NIVKH, wordEntity.nv,
+            "$HOST_URL/nivkhaudio/${wordEntity.id}.mp3"
         )
-        allWordsDb.ru?.let {
-            localesMap["ru"] = LocaleData(Language.RUSSIAN, it)
+        wordEntity.ru?.let {
+            localesMap[RUSSIAN] = LocaleData(Language.RUSSIAN, it)
         }
-        allWordsDb.en?.let {
-            localesMap["en"] = LocaleData(Language.ENGLISH, it)
+        wordEntity.en?.let {
+            localesMap[ENGLISH] = LocaleData(Language.ENGLISH, it)
         }
-        return Word(id = allWordsDb.id, locales = localesMap)
+        return Word(id = wordEntity.id, locales = localesMap)
     }
 
-    fun mapWordToAllWordsDb(word: Word) = AllWordsDb(
+    fun mapWordToAllWordsDb(word: Word) = WordEntity(
         id = word.id,
         nv = word.locales[Language.NIVKH.code]?.value ?: "",
         ru = word.locales[Language.RUSSIAN.code]?.value ?: "",
