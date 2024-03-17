@@ -66,6 +66,7 @@ class RussianFragment : Fragment() {
         binding.rvWord.adapter = adapter
         subscribe()
         getLocale()
+        viewModel.getWords()
     }
 
     private fun getLocale() {

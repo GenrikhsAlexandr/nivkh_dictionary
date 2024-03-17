@@ -70,17 +70,17 @@ class MainViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
-        getFavoritesWords()
         getWordFromSearchRepository()
         getFavoritesFromSearchRepository()
-        getWords()
     }
 
     suspend fun getWordStartApp(): ResultState<List<Word>> {
+        isProgressBarVisible.value = true
         return interactor.getWordStartApp()
     }
 
-    private fun getWords() {
+    fun getWords() {
+        println("getWords")
         viewModelScope.launch {
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
@@ -97,7 +97,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun getFavoritesWords() {
+    fun getFavoritesWords() {
         viewModelScope.launch {
             interactor.getFavoritesWords().collect {
                 _favoritesWords.value = it
@@ -122,6 +122,9 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             searchRepository.filteredFavoritesWords.collect {
                 _searchFavoritesWords.value = it
+                println("getFavoritesFromSearchRepository")
+                println("getFavoritesFromSearchRepository = $it")
+
             }
         }
     }

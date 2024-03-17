@@ -60,6 +60,7 @@ class FavoritesFragment : Fragment() {
         binding.rvWord.adapter = adapter
         getLocale()
         getFavoritesWords()
+        getFavoritesWords()
     }
 
     private fun getLocale() {
@@ -68,8 +69,10 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun getFavoritesWords() {
+        viewModel.getFavoritesWords()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.favoritesWords.collect { words ->
+                println("favoritesWords.collect = ${viewModel.favoritesWords.value}")
                 binding.tvEmpty.isVisible = words.isEmpty()
                 binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)

@@ -6,14 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
@@ -70,7 +67,7 @@ class NivkhFragment : Fragment() {
         binding.rvWord.adapter = adapter
         subscribe()
         getLocale()
-        refresh()
+       // refresh()
         getWordFirstStartApp()
     }
 
@@ -83,12 +80,12 @@ class NivkhFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             when (viewModel.getWordStartApp()) {
                 is ResultState.Error -> startErrorActivity()
-                else -> {}
+                is ResultState.Success -> viewModel.getWords()
             }
         }
     }
 
-    private fun refresh() {
+    /*private fun refresh() {
         val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
@@ -112,7 +109,7 @@ class NivkhFragment : Fragment() {
             }
         }
     }
-
+*/
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
