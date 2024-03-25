@@ -10,13 +10,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentMainBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
-import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +28,7 @@ class MainFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
-    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+    private val viewModel: MainViewModel by activityViewModels { viewModelFactory }
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding get() = _binding!!
 

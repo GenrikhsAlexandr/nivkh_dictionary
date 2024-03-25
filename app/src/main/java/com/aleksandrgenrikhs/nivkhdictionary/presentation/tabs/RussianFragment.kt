@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentRussianBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
-import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
@@ -29,7 +29,7 @@ class RussianFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
-    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+    private val viewModel: MainViewModel by activityViewModels { viewModelFactory }
     private var _binding: FragmentRussianBinding? = null
     private val binding: FragmentRussianBinding get() = _binding!!
     private val adapter: WordAdapter = WordAdapter(
@@ -37,7 +37,8 @@ class RussianFragment : Fragment() {
             WordDetailsBottomSheet.show(
                 word, fragmentManager = childFragmentManager
             )
-        }
+        },
+        locale = RUSSIAN
     )
 
     override fun onAttach(context: Context) {
@@ -59,19 +60,11 @@ class RussianFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getLocale()
         binding.rvWord.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
-        binding.rvWord.adapter = adapter
         subscribe()
-        getLocale()
-        viewModel.getWords()
-    }
-
-    private fun getLocale() {
-        val locale = RUSSIAN
-        viewModel.setLocale(locale)
+        binding.rvWord.adapter = adapter
     }
 
     private fun subscribe() {
@@ -83,7 +76,6 @@ class RussianFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isProgressBarVisible.collect {
                 binding.progressBar.isVisible = it
-                println("progressBar =$it")
 
             }
         }

@@ -1,12 +1,10 @@
-package com.aleksandrgenrikhs.nivkhdictionary.di
+package com.aleksandrgenrikhs.nivkhdictionary.di.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import javax.inject.Inject
 import javax.inject.Provider
-import javax.inject.Singleton
 
-@Singleton
 class MainViewModelFactory @Inject
 constructor(
     private val viewModelProviders: Map<Class<out ViewModel>,

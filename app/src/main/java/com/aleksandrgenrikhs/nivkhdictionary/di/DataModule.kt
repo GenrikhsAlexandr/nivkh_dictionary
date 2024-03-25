@@ -1,27 +1,21 @@
 package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
-import androidx.lifecycle.ViewModel
-import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.AppDatabase
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
-import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.multibindings.IntoMap
 import javax.inject.Singleton
 
 @Module
 interface DataModule {
     @Binds
     @Singleton
-    fun bindsWordRepository(
-        impl: WordRepositoryImpl
-    ): WordRepository
+    fun bindsWordRepository(impl: WordRepositoryImpl): WordRepository
 
     companion object {
 
@@ -29,25 +23,15 @@ interface DataModule {
         @Singleton
         fun provideWordDao(
             application: Application
-        ): WordDao {
-            return AppDatabase.getInstance(application).wordsRequestDao()
-        }
+        ): WordDao = AppDatabase.getInstance(application).wordsRequestDao()
 
         @Provides
         @Singleton
-        fun provideSearchRepository(): SearchRepository {
-            return SearchRepository
-        }
+        fun networkConnected(): NetworkConnected = NetworkConnected
 
-        @Provides
-        @Singleton
-        fun networkConnected(): NetworkConnected {
-            return NetworkConnected
-        }
+        /*    @Provides
+            @Singleton
+            fun provideSearchRepository(): SearchRepository = SearchRepository*/
     }
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(MainViewModel::class)
-    fun mainViewModel(viewModel: MainViewModel): ViewModel
 }

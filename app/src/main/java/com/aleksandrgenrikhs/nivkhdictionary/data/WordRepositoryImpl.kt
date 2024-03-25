@@ -57,7 +57,6 @@ class WordRepositoryImpl @Inject constructor(
         return ResultState.Success(emptyList())
     }
 
-
     override suspend fun updateWords(): ResultState<List<Word>> {
         return withContext(Dispatchers.IO) {
             if (!networkConnected.isNetworkConnected(application)) {
@@ -67,10 +66,10 @@ class WordRepositoryImpl @Inject constructor(
                     val response = service.getWords().mapNotNull {
                         wordMapper.mapToWord(it)
                     }
-                    response.forEach {
-                        val allWords = wordMapper.mapWordToAllWordsDb(it)
-                        wordDao.insertWord(allWords)
+                    val entities = response.map {
+                        wordMapper.mapWordToAllWordsDb(it)
                     }
+                    wordDao.insertWords(entities)
                     return@withContext ResultState.Success(response)
                 } catch (e: Exception) {
                     ResultState.Error(R.string.error_message)

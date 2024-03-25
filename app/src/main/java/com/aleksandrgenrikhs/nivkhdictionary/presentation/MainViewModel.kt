@@ -3,35 +3,31 @@ package com.aleksandrgenrikhs.nivkhdictionary.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
-import com.aleksandrgenrikhs.nivkhdictionary.data.SearchRepository
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
+import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val interactor: WordInteractor,
-    private val searchRepository: SearchRepository,
 ) : ViewModel() {
 
-    private val _allWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
-    private val _searchWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
-    private val _searchFavoritesWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
+    private val _searchRequest: MutableStateFlow<String> = MutableStateFlow("")
 
-    private val _favoritesWords: MutableStateFlow<List<Word>> = MutableStateFlow(emptyList())
     private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    private val currentLocale: MutableStateFlow<Locale> = MutableStateFlow(Locale(""))
     val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavoriteFragment: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -45,97 +41,80 @@ class MainViewModel @Inject constructor(
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
+    private val _showErrorPage: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showErrorPage = _showErrorPage.asStateFlow()
+
+
     private lateinit var favoritesWord: Word
 
-    val words: StateFlow<List<WordListItem>> = _searchWords.map { words ->
-        words
-            .mapNotNull { word ->
-                WordListItem(
-                    word = word,
-                    title = word.locales[currentLocale.value.language]?.value
-                        ?: return@mapNotNull null
-                )
-            }
+    val favoritesWords: StateFlow<List<WordListItem>> = combine(
+        _searchRequest,
+        interactor.getFavoritesWords()
+    ) { request, words ->
+        words.filterByRequest(request = request)
+    }.map { words ->
+
+        words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val favoritesWords: StateFlow<List<WordListItem>> = _searchFavoritesWords.map { words ->
-        words
-            .mapNotNull { word ->
-                WordListItem(
-                    word = word,
-                    title = word.locales[currentLocale.value.language]?.value
-                        ?: return@mapNotNull null
-                )
-            }
+    val words: StateFlow<List<WordListItem>> = combine(
+        _searchRequest,
+        interactor.getWords()
+    ) { request, words ->
+        words.filterByRequest(request = request)
+    }.map { words ->
+        words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
-        getWordFromSearchRepository()
-        getFavoritesFromSearchRepository()
+        getWordsForStart()
     }
 
-    suspend fun getWordStartApp(): ResultState<List<Word>> {
-        isProgressBarVisible.value = true
-        return interactor.getWordStartApp()
+    private fun getWordsForStart() {
+        viewModelScope.launch {
+            when (interactor.getWordStartApp()) {
+                is ResultState.Success -> getWords()
+                is ResultState.Error -> _showErrorPage.tryEmit(true)
+            }
+        }
     }
 
-    fun getWords() {
-        println("getWords")
+    private fun List<Word>.filterByRequest(request: String): List<Word> {
+        return if (request.isEmpty()) {
+            this
+        } else {
+            this.filter { word ->
+                word.locales[Strings.NIVKH]?.value?.contains(
+                    request,
+                    ignoreCase = true
+                ) ?: false
+                        || word.locales[Strings.ENGLISH]?.value?.contains(
+                    request,
+                    ignoreCase = true
+                ) ?: false
+                        || word.locales[Strings.RUSSIAN]?.value?.contains(
+                    request,
+                    ignoreCase = true
+                ) ?: false
+            }
+        }
+    }
+
+    private fun List<Word>.mapToWordListItem(): List<WordListItem> {
+        return this.map { word ->
+            WordListItem(
+                word = word
+            )
+        }
+    }
+
+    private fun getWords() {
         viewModelScope.launch {
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
-            interactor.getWords().collect {
-                _allWords.value = it
-                isProgressBarVisible.value = false
-                isRvWordVisible.value = true
-            }
-        }
-        viewModelScope.launch {
-            _allWords.collect {
-                searchRepository.allWords.value = it
-            }
-        }
-    }
-
-    fun getFavoritesWords() {
-        viewModelScope.launch {
-            interactor.getFavoritesWords().collect {
-                _favoritesWords.value = it
-            }
-        }
-        viewModelScope.launch {
-            _favoritesWords.collect {
-                searchRepository.favoritesWords.value = it
-            }
-        }
-    }
-
-    private fun getWordFromSearchRepository() {
-        viewModelScope.launch {
-            searchRepository.filteredWords.collect {
-                _searchWords.value = it
-            }
-        }
-    }
-
-    private fun getFavoritesFromSearchRepository() {
-        viewModelScope.launch {
-            searchRepository.filteredFavoritesWords.collect {
-                _searchFavoritesWords.value = it
-                println("getFavoritesFromSearchRepository")
-                println("getFavoritesFromSearchRepository = $it")
-
-            }
-        }
-    }
-
-    suspend fun updateWords(): ResultState<List<Word>> {
-        return interactor.updateWord()
-    }
-
-    fun setLocale(locale: String) {
-        viewModelScope.launch {
-            currentLocale.value = Locale(locale)
+            interactor.getWords()
+            isProgressBarVisible.value = false
+            isRvWordVisible.value = true
         }
     }
 
@@ -168,11 +147,14 @@ class MainViewModel @Inject constructor(
     }
 
     fun onSearchQuery(query: String) {
-        searchRepository.setSearchRequest(query)
+        _searchRequest.value = query
     }
 
     fun onDestroy() {
-        searchRepository.allWords.value = emptyList()
         isSearchViewVisible.value = false
+    }
+
+    suspend fun updateWords(): ResultState<List<Word>> {
+        return interactor.updateWord()
     }
 }

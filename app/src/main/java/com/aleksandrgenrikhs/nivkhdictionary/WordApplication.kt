@@ -11,7 +11,5 @@ class WordApplication : Application(), ComponentProvider {
         DaggerApplicationComponent.factory().create(this)
     }
 
-    override fun provideComponent(): ApplicationComponent {
-        return applicationComponent
-    }
+    override fun provideComponent(): ApplicationComponent = applicationComponent
 }

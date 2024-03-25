@@ -1,6 +1,7 @@
 package com.aleksandrgenrikhs.nivkhdictionary.di
 
 import android.app.Application
+import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.ViewModelsBindingModule
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.FavoritesFragment
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainActivity
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainFragment
@@ -14,7 +15,9 @@ import javax.inject.Singleton
 
 @Component(
     modules = [
-        DataModule::class]
+        DataModule::class,
+        ViewModelsBindingModule::class
+    ]
 )
 @Singleton
 interface ApplicationComponent {

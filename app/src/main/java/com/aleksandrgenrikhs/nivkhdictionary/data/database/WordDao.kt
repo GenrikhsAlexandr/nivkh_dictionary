@@ -14,7 +14,7 @@ interface WordDao {
     suspend fun insertFavoriteWord(word: FavoriteWordEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWord(word: WordEntity)
+    suspend fun insertWords(words: List<WordEntity>)
 
     @Query("SELECT * FROM words")
     fun getWords(): Flow<List<WordEntity>>

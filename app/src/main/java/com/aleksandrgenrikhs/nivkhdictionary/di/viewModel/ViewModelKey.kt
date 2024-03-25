@@ -1,4 +1,4 @@
-package com.aleksandrgenrikhs.nivkhdictionary.di
+package com.aleksandrgenrikhs.nivkhdictionary.di.viewModel
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

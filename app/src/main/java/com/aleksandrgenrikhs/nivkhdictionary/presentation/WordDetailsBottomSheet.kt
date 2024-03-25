@@ -14,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.WordDetailsBottomsheetBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
-import com.aleksandrgenrikhs.nivkhdictionary.di.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected

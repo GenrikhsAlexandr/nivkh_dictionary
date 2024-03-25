@@ -9,7 +9,8 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 
 class WordAdapter(
-    val onWordClick: (Word) -> Unit
+    val onWordClick: (Word) -> Unit,
+    val locale: String
 ) : ListAdapter<WordListItem, WordAdapter.WordViewHolder>(WordDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordViewHolder {
@@ -33,7 +34,7 @@ class WordAdapter(
     inner class WordViewHolder(private val binding: ListItemWordBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(listItem: WordListItem) {
-            binding.listItemWord.text = listItem.title
+            binding.listItemWord.text = listItem.getTitle(locale)
             binding.listItemWord.setOnClickListener {
                 onWordClick(listItem.word)
             }
