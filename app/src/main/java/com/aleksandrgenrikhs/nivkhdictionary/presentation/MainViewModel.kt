@@ -1,13 +1,18 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
+import android.app.Application
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
+import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,22 +25,29 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class MainViewModel
+@Inject constructor(
     private val interactor: WordInteractor,
+    private val application: Application
 ) : ViewModel() {
+
+    private var player: MediaPlayer? = null
 
     private val _searchRequest: MutableStateFlow<String> = MutableStateFlow("")
 
-    private val _isFavorite: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
+    val isSelected: StateFlow<Word?> = _isSelected
 
-    val isIconClick: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isFavoriteFragment: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = isSelected.map { word ->
+        word?.let {
+            interactor.isFavorite(it)
+        } ?: false
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val isWordDetail: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isFavorite: StateFlow<Boolean> = _isFavorite
     val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
@@ -43,9 +55,6 @@ class MainViewModel @Inject constructor(
 
     private val _showErrorPage: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showErrorPage = _showErrorPage.asStateFlow()
-
-
-    private lateinit var favoritesWord: Word
 
     val favoritesWords: StateFlow<List<WordListItem>> = combine(
         _searchRequest,
@@ -119,12 +128,12 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun onFavoriteButtonClicked() {
-        isIconClick.value = !isIconClick.value
         viewModelScope.launch {
-            if (isIconClick.value) {
-                saveFavoritesWord(favoritesWord)
+            val word = isSelected.value ?: return@launch
+            if (isFavorite.value) {
+                deleteFavoritesWord(word)
             } else {
-                deleteFavoritesWord(favoritesWord)
+                saveFavoritesWord(word)
             }
         }
     }
@@ -139,13 +148,6 @@ class MainViewModel @Inject constructor(
         toastMessage.tryEmit(R.string.delete_word)
     }
 
-    fun isFavoritesWord(word: Word) {
-        favoritesWord = word
-        viewModelScope.launch {
-            _isFavorite.value = interactor.isFavorite(word)
-        }
-    }
-
     fun onSearchQuery(query: String) {
         _searchRequest.value = query
     }
@@ -156,5 +158,32 @@ class MainViewModel @Inject constructor(
 
     suspend fun updateWords(): ResultState<List<Word>> {
         return interactor.updateWord()
+    }
+
+    fun onWordClicked(word: Word) {
+        _isSelected.value = word
+    }
+
+    fun wordDetailsDestroy() {
+        _isSelected.value = null
+    }
+
+    private fun createPlayer(): MediaPlayer? {
+        val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code) ?: return null
+        val url = "${nvLocale.audioPath}"
+        return MediaPlayer.create(application, Uri.parse(url))
+    }
+
+    fun play() {
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                createPlayer()?.start()
+                println("играет звук")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("ошибка")
+
+        }
     }
 }

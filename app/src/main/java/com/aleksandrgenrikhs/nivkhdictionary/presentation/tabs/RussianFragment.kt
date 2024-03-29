@@ -34,8 +34,9 @@ class RussianFragment : Fragment() {
     private val binding: FragmentRussianBinding get() = _binding!!
     private val adapter: WordAdapter = WordAdapter(
         onWordClick = { word ->
+            viewModel.onWordClicked(word)
             WordDetailsBottomSheet.show(
-                word, fragmentManager = childFragmentManager
+                fragmentManager = childFragmentManager
             )
         },
         locale = RUSSIAN
@@ -52,9 +53,6 @@ class RussianFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRussianBinding.inflate(inflater, container, false)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isFavoriteFragment.value = false
-        }
         return binding.root
     }
 

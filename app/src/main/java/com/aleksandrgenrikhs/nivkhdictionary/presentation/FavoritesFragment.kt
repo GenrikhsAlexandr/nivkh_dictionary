@@ -30,8 +30,9 @@ class FavoritesFragment : Fragment() {
     private val binding: FragmentFavoritesBinding get() = _binding!!
     private val adapter: WordAdapter = WordAdapter(
         onWordClick = { word ->
+            viewModel.onWordClicked(word)
             WordDetailsBottomSheet.show(
-                word, fragmentManager = childFragmentManager
+                fragmentManager = childFragmentManager
             )
         },
         locale = NIVKH
@@ -48,9 +49,6 @@ class FavoritesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isFavoriteFragment.value = true
-        }
         return binding.root
     }
 

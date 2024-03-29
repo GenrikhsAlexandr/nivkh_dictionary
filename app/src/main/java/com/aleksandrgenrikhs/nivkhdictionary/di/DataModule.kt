@@ -28,10 +28,5 @@ interface DataModule {
         @Provides
         @Singleton
         fun networkConnected(): NetworkConnected = NetworkConnected
-
-        /*    @Provides
-            @Singleton
-            fun provideSearchRepository(): SearchRepository = SearchRepository*/
     }
-
 }

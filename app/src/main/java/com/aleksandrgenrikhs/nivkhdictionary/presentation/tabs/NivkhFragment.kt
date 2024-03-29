@@ -36,9 +36,10 @@ class NivkhFragment : Fragment() {
     private var _binding: FragmentNivkhBinding? = null
     private val binding: FragmentNivkhBinding get() = _binding!!
     private val adapter: WordAdapter = WordAdapter(
-        onWordClick = { word ->
+        onWordClick = {
+            viewModel.onWordClicked(it)
             WordDetailsBottomSheet.show(
-                word, fragmentManager = childFragmentManager
+                fragmentManager = childFragmentManager
             )
         },
         locale = NIVKH
@@ -60,9 +61,7 @@ class NivkhFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isFavoriteFragment.value = false
-        }
+
         binding.rvWord.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
