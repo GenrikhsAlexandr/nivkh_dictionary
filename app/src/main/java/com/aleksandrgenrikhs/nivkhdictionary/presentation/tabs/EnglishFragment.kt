@@ -38,7 +38,7 @@ class EnglishFragment : Fragment() {
                 fragmentManager = childFragmentManager
             )
         },
-        locale = Language.NIVKH.code
+        locale = Language.ENGLISH.code
     )
 
     override fun onAttach(context: Context) {
