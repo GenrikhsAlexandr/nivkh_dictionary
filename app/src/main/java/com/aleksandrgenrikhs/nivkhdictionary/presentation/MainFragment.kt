@@ -62,7 +62,6 @@ class MainFragment : Fragment() {
             return@setOnMenuItemClickListener when (item.itemId) {
                 R.id.search -> {
                     viewModel.isSearchViewVisible.value = true
-
                     true
                 }
 

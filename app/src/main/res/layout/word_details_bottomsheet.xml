@@ -17,7 +17,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/nvWord"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:gravity="center"
             android:maxLines="2"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
@@ -42,7 +42,7 @@
             app:barrierDirection="end" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btSaved"
+            android:id="@+id/favoritesButton"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

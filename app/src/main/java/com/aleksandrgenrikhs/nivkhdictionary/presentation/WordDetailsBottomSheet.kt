@@ -1,7 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
 import android.content.Context
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +38,6 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
     private val viewModel: MainViewModel by activityViewModels { viewModelFactory }
     private var _binding: WordDetailsBottomsheetBinding? = null
     private val binding: WordDetailsBottomsheetBinding get() = _binding!!
-    private var player: MediaPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -57,14 +55,13 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
             container,
             false
         )
-        binding.btSaved.setOnClickListener {
+        binding.favoritesButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.onFavoriteButtonClicked()
-                delay(100)
+                delay(1)
                 dismiss()
             }
         }
-
         subscribe()
         sound()
         return binding.root
@@ -74,9 +71,9 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isFavorite.collect { isFavorite ->
                 if (isFavorite) {
-                    binding.btSaved.setIconResource(R.drawable.ic_favorites)
+                    binding.favoritesButton.setIconResource(R.drawable.ic_favorites)
                 } else {
-                    binding.btSaved.setIconResource(R.drawable.ic_favorites_no_selected)
+                    binding.favoritesButton.setIconResource(R.drawable.ic_favorites_no_selected)
                 }
             }
         }
@@ -86,15 +83,23 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isSelected.collect {
+            viewModel.isSelected.collect { word ->
                 with(binding) {
                     nvWord.text =
-                        viewModel.isSelected.value?.locales?.get(Language.NIVKH.code)?.value ?: ""
+                        word?.locales?.get(Language.NIVKH.code)?.value
+                            ?: getString(R.string.no_data)
                     ruWord.text =
-                        viewModel.isSelected.value?.locales?.get(Language.RUSSIAN.code)?.value ?: ""
+                        word?.locales?.get(Language.RUSSIAN.code)?.value
+                            ?: getString(R.string.no_data)
                     enWord.text =
-                        viewModel.isSelected.value?.locales?.get(Language.ENGLISH.code)?.value ?: ""
+                        word?.locales?.get(Language.ENGLISH.code)?.value
+                            ?: getString(R.string.no_data)
                 }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isClickable.collect { isClickable ->
+                binding.speakButton.isClickable = isClickable
             }
         }
     }

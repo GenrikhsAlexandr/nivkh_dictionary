@@ -16,11 +16,11 @@ import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
-import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.NIVKH
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +42,7 @@ class NivkhFragment : Fragment() {
                 fragmentManager = childFragmentManager
             )
         },
-        locale = NIVKH
+        locale = Language.NIVKH.code
     )
 
     override fun onAttach(context: Context) {
@@ -115,6 +115,6 @@ class NivkhFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewModel.onDestroy()
+        viewModel.searchDestroy()
     }
 }

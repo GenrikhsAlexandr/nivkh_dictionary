@@ -10,8 +10,8 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
+import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
-import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 class MainViewModel
@@ -31,12 +32,22 @@ class MainViewModel
     private val application: Application
 ) : ViewModel() {
 
-    private var player: MediaPlayer? = null
-
-    private val _searchRequest: MutableStateFlow<String> = MutableStateFlow("")
-
     private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
     val isSelected: StateFlow<Word?> = _isSelected
+
+    private val _showErrorPage: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showErrorPage = _showErrorPage.asStateFlow()
+
+    private var mediaPlayer: MediaPlayer? = null
+    private val searchRequest: MutableStateFlow<String> = MutableStateFlow("")
+    val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isClickable: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     val isFavorite: StateFlow<Boolean> = isSelected.map { word ->
         word?.let {
@@ -44,20 +55,8 @@ class MainViewModel
         } ?: false
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-
-    val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-
-    private val _showErrorPage: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val showErrorPage = _showErrorPage.asStateFlow()
-
     val favoritesWords: StateFlow<List<WordListItem>> = combine(
-        _searchRequest,
+        searchRequest,
         interactor.getFavoritesWords()
     ) { request, words ->
         words.filterByRequest(request = request)
@@ -67,7 +66,7 @@ class MainViewModel
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val words: StateFlow<List<WordListItem>> = combine(
-        _searchRequest,
+        searchRequest,
         interactor.getWords()
     ) { request, words ->
         words.filterByRequest(request = request)
@@ -81,7 +80,7 @@ class MainViewModel
 
     private fun getWordsForStart() {
         viewModelScope.launch {
-            when (interactor.getWordStartApp()) {
+            when (interactor.getWordForStartApp()) {
                 is ResultState.Success -> getWords()
                 is ResultState.Error -> _showErrorPage.tryEmit(true)
             }
@@ -93,15 +92,15 @@ class MainViewModel
             this
         } else {
             this.filter { word ->
-                word.locales[Strings.NIVKH]?.value?.contains(
+                word.locales[Language.NIVKH.code]?.value?.contains(
                     request,
                     ignoreCase = true
                 ) ?: false
-                        || word.locales[Strings.ENGLISH]?.value?.contains(
+                        || word.locales[Language.RUSSIAN.code]?.value?.contains(
                     request,
                     ignoreCase = true
                 ) ?: false
-                        || word.locales[Strings.RUSSIAN]?.value?.contains(
+                        || word.locales[Language.ENGLISH.code]?.value?.contains(
                     request,
                     ignoreCase = true
                 ) ?: false
@@ -128,8 +127,8 @@ class MainViewModel
     }
 
     suspend fun onFavoriteButtonClicked() {
-        viewModelScope.launch {
-            val word = isSelected.value ?: return@launch
+        val word = isSelected.value
+        if (word != null) {
             if (isFavorite.value) {
                 deleteFavoritesWord(word)
             } else {
@@ -149,11 +148,7 @@ class MainViewModel
     }
 
     fun onSearchQuery(query: String) {
-        _searchRequest.value = query
-    }
-
-    fun onDestroy() {
-        isSearchViewVisible.value = false
+        searchRequest.value = query
     }
 
     suspend fun updateWords(): ResultState<List<Word>> {
@@ -164,26 +159,48 @@ class MainViewModel
         _isSelected.value = word
     }
 
-    fun wordDetailsDestroy() {
-        _isSelected.value = null
-    }
-
     private fun createPlayer(): MediaPlayer? {
         val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code) ?: return null
         val url = "${nvLocale.audioPath}"
-        return MediaPlayer.create(application, Uri.parse(url))
+        return try {
+            MediaPlayer.create(application, Uri.parse(url))
+        } catch (e: IOException) {
+            null
+        }
     }
 
     fun play() {
-        try {
-            viewModelScope.launch(Dispatchers.IO) {
-                createPlayer()?.start()
-                println("играет звук")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            println("ошибка")
+        viewModelScope.launch(Dispatchers.IO) {
+            isClickable.value = false
+            if (NetworkConnected.isNetworkConnected(application)) {
+                mediaPlayer = createPlayer()
+                if (mediaPlayer != null) {
+                    createPlayer()?.start()
+                    println("mediaPlayerStart =$mediaPlayer")
 
+                } else {
+                    toastMessage.tryEmit(R.string.error_server)
+                    playerDestroy()
+                }
+            } else {
+                toastMessage.tryEmit(R.string.error_message)
+                playerDestroy()
+            }
+            isClickable.value = true
         }
+    }
+
+    private fun playerDestroy() {
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
+
+    fun wordDetailsDestroy() {
+        _isSelected.value = null
+        playerDestroy()
+    }
+
+    fun searchDestroy() {
+        isSearchViewVisible.value = false
     }
 }

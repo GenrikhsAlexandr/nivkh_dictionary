@@ -13,7 +13,7 @@ class WordInteractor @Inject constructor(
 
     suspend fun deleteFavoriteWord(word: Word) = repository.deleteFavoriteWord(word)
 
-    suspend fun getWordStartApp(): ResultState<List<Word>> = repository.getWordStartApp()
+    suspend fun getWordForStartApp(): ResultState<List<Word>> = repository.getWordStartApp()
 
     fun getWords(): Flow<List<Word>> = repository.getWords()
 

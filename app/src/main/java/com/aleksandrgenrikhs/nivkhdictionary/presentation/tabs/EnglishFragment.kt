@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,10 +13,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentEnglishBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
-import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.ENGLISH
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,7 +38,7 @@ class EnglishFragment : Fragment() {
                 fragmentManager = childFragmentManager
             )
         },
-        locale = ENGLISH
+        locale = Language.NIVKH.code
     )
 
     override fun onAttach(context: Context) {
@@ -66,7 +65,6 @@ class EnglishFragment : Fragment() {
         subscribe()
     }
 
-
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
@@ -84,14 +82,11 @@ class EnglishFragment : Fragment() {
                 binding.rvWord.isVisible = it
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.toastMessage.collect { message ->
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-            }
-        }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        viewModel.searchDestroy()
     }
 }

@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentFavoritesBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
-import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.NIVKH
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FavoritesFragment : Fragment() {
+
     companion object {
         fun newInstance() = FavoritesFragment()
     }
@@ -35,7 +36,7 @@ class FavoritesFragment : Fragment() {
                 fragmentManager = childFragmentManager
             )
         },
-        locale = NIVKH
+        locale = Language.NIVKH.code
     )
 
     override fun onAttach(context: Context) {
@@ -75,6 +76,6 @@ class FavoritesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewModel.onDestroy()
+        viewModel.searchDestroy()
     }
 }

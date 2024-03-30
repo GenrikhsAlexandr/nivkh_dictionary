@@ -6,9 +6,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordEntity
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.LocaleData
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
-import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.ENGLISH
-import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.NIVKH
-import com.aleksandrgenrikhs.nivkhdictionary.utils.Strings.RUSSIAN
 import javax.inject.Inject
 
 const val HOST_URL = "${BASE_URL}/data"
@@ -20,14 +17,14 @@ class WordMapper @Inject constructor() {
             id = wordDto.id ?: return null,
             locales = buildMap {
                 put(
-                    NIVKH, LocaleData(
+                    Language.NIVKH.code, LocaleData(
                         locale = Language.NIVKH,
                         value = wordDto.nv ?: return null
                     )
                 )
                 wordDto.ru?.let {
                     put(
-                        RUSSIAN, LocaleData(
+                        Language.RUSSIAN.code, LocaleData(
                             locale = Language.RUSSIAN,
                             value = it
                         )
@@ -35,7 +32,7 @@ class WordMapper @Inject constructor() {
                 }
                 wordDto.en?.let {
                     put(
-                        ENGLISH, LocaleData(
+                        Language.ENGLISH.code, LocaleData(
                             locale = Language.ENGLISH,
                             value = it
                         )
@@ -47,14 +44,14 @@ class WordMapper @Inject constructor() {
 
     fun mapFavoriteWordEntityToWord(favoriteWord: FavoriteWordEntity): Word {
         val localesMap = mutableMapOf<String, LocaleData>()
-        localesMap[NIVKH] = LocaleData(
+        localesMap[Language.NIVKH.code] = LocaleData(
             Language.NIVKH, favoriteWord.nv, "$HOST_URL/nivkhaudio/${favoriteWord.id}.mp3"
         )
         favoriteWord.ru?.let {
-            localesMap[RUSSIAN] = LocaleData(Language.RUSSIAN, it)
+            localesMap[Language.RUSSIAN.code] = LocaleData(Language.RUSSIAN, it)
         }
         favoriteWord.en?.let {
-            localesMap[ENGLISH] = LocaleData(Language.ENGLISH, it)
+            localesMap[Language.ENGLISH.code] = LocaleData(Language.ENGLISH, it)
         }
         return Word(id = favoriteWord.id, locales = localesMap)
     }
@@ -68,15 +65,15 @@ class WordMapper @Inject constructor() {
 
     fun mapWordEntityToWord(wordEntity: WordEntity): Word {
         val localesMap = mutableMapOf<String, LocaleData>()
-        localesMap[NIVKH] = LocaleData(
+        localesMap[Language.NIVKH.code] = LocaleData(
             Language.NIVKH, wordEntity.nv,
             "$HOST_URL/nivkhaudio/${wordEntity.id}.mp3"
         )
         wordEntity.ru?.let {
-            localesMap[RUSSIAN] = LocaleData(Language.RUSSIAN, it)
+            localesMap[Language.RUSSIAN.code] = LocaleData(Language.RUSSIAN, it)
         }
         wordEntity.en?.let {
-            localesMap[ENGLISH] = LocaleData(Language.ENGLISH, it)
+            localesMap[Language.ENGLISH.code] = LocaleData(Language.ENGLISH, it)
         }
         return Word(id = wordEntity.id, locales = localesMap)
     }
