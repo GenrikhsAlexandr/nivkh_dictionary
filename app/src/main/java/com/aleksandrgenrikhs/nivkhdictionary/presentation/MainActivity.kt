@@ -24,6 +24,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+    }
+
+    override fun onResume() {
+        super.onResume()
         Handler(Looper.getMainLooper()).postDelayed({
             startMainFragment()
             binding.lottieAnimationView.isVisible = false

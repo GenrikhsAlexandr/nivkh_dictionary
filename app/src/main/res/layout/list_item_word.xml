@@ -4,7 +4,8 @@
     android:id="@+id/listItemWord"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="16dp"
+    android:background="?attr/selectableItemBackground"
+    android:padding="16dp"
     android:textColor="@color/dark_text"
     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
     tools:text="Word" />
