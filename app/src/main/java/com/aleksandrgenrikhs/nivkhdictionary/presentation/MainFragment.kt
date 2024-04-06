@@ -12,6 +12,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentMainBinding
@@ -74,9 +75,8 @@ class MainFragment : Fragment() {
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             return@setOnItemSelectedListener when (menuItem.itemId) {
                 R.id.home -> {
-                    val homeFragment = HomeFragment.newInstance()
                     parentFragmentManager.commit {
-                        replace(R.id.fragmentContainer, homeFragment)
+                        replace<HomeFragment>(R.id.fragmentContainer)
                         setReorderingAllowed(true)
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.app_name)
@@ -87,9 +87,8 @@ class MainFragment : Fragment() {
                 }
 
                 R.id.favorite -> {
-                    val favoriteFragment = FavoritesFragment.newInstance()
                     parentFragmentManager.commit {
-                        replace(R.id.fragmentContainer, favoriteFragment)
+                        replace<FavoritesFragment>(R.id.fragmentContainer)
                         setReorderingAllowed(true)
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.favorites)
@@ -100,9 +99,8 @@ class MainFragment : Fragment() {
                 }
 
                 R.id.about -> {
-                    val aboutFragment = AboutFragment.newInstance()
                     parentFragmentManager.commit {
-                        replace(R.id.fragmentContainer, aboutFragment)
+                        replace<AboutFragment>(R.id.fragmentContainer)
                         setReorderingAllowed(true)
                         addToBackStack(null)
                         binding.toolbar.title = getString(R.string.about)

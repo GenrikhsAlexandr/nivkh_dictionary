@@ -6,6 +6,7 @@ import android.os.Looper
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.WordApplication
@@ -23,20 +24,17 @@ class MainActivity : AppCompatActivity() {
         (applicationContext as WordApplication).applicationComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (savedInstanceState == null) {
+                supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add<MainFragment>(R.id.container)
+                }
+            }
+            binding.lottieAnimationView.isVisible = false
+        }, 3000)
+
         setContentView(binding.root)
     }
 
-    override fun onResume() {
-        super.onResume()
-        Handler(Looper.getMainLooper()).postDelayed({
-            startMainFragment()
-            binding.lottieAnimationView.isVisible = false
-        }, 3000)
-    }
-
-    private fun startMainFragment() {
-        supportFragmentManager.commit {
-            replace(R.id.container, MainFragment.newInstance())
-        }
-    }
 }
