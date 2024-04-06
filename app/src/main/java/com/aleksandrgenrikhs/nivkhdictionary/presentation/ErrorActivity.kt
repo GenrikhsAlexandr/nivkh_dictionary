@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.ActivityErrorBinding
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.ERROR_MESSAGE_KEY
 
 class ErrorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityErrorBinding
@@ -11,6 +12,10 @@ class ErrorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityErrorBinding.inflate(layoutInflater)
+
+        val errorMessage = intent.getIntExtra(ERROR_MESSAGE_KEY, 0)
+        binding.errorTitle.text = getString(errorMessage)
+
         binding.refreshButton.setOnClickListener {
             val intent = Intent(this@ErrorActivity, MainActivity::class.java)
             startActivity(intent)

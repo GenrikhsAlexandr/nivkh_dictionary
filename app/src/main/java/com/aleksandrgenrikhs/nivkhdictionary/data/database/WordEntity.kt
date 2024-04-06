@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "words")
 data class WordEntity(
     @PrimaryKey(autoGenerate = false)
-    val id: String,
+    val id: Int,
     val nv: String,
     val ru: String?,
     val en: String?,

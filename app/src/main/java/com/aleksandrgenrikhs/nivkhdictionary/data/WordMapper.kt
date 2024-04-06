@@ -14,7 +14,7 @@ class WordMapper @Inject constructor() {
 
     fun mapToWord(wordDto: WordDto): Word? {
         return Word(
-            id = wordDto.id ?: return null,
+            id = wordDto.id?.toInt() ?: return null,
             locales = buildMap {
                 put(
                     Language.NIVKH.code, LocaleData(

@@ -72,7 +72,7 @@ class WordRepositoryImpl @Inject constructor(
                     wordDao.insertWords(entities)
                     return@withContext ResultState.Success(response)
                 } catch (e: Exception) {
-                    ResultState.Error(R.string.error_message)
+                    ResultState.Error(R.string.error_message_response)
                 }
             }
         }

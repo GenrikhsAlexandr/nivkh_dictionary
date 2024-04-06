@@ -23,7 +23,7 @@ interface WordDao {
     fun getFavorites(): Flow<List<FavoriteWordEntity>>
 
     @Query("SELECT * FROM word WHERE id = :wordId")
-    suspend fun getWordById(wordId: String): FavoriteWordEntity?
+    suspend fun getWordById(wordId: Int): FavoriteWordEntity?
 
     @Delete
     suspend fun deleteWord(word: FavoriteWordEntity)

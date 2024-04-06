@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -34,9 +33,6 @@ class MainViewModel
 
     private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
     val isSelected: StateFlow<Word?> = _isSelected
-
-    private val _showErrorPage: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val showErrorPage = _showErrorPage.asStateFlow()
 
     private var mediaPlayer: MediaPlayer? = null
     private val searchRequest: MutableStateFlow<String> = MutableStateFlow("")
@@ -74,17 +70,9 @@ class MainViewModel
         words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    init {
-        getWordsForStart()
-    }
-
-    private fun getWordsForStart() {
-        viewModelScope.launch {
-            when (interactor.getWordForStartApp()) {
-                is ResultState.Success -> getWords()
-                is ResultState.Error -> _showErrorPage.tryEmit(true)
-            }
-        }
+    suspend fun getWordsForStart(): ResultState<List<Word>> {
+        isProgressBarVisible.value = true
+        return interactor.getWordForStartApp()
     }
 
     private fun List<Word>.filterByRequest(request: String): List<Word> {
@@ -116,7 +104,7 @@ class MainViewModel
         }
     }
 
-    private fun getWords() {
+    fun getWords() {
         viewModelScope.launch {
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
@@ -176,7 +164,6 @@ class MainViewModel
                 mediaPlayer = createPlayer()
                 if (mediaPlayer != null) {
                     createPlayer()?.start()
-                    println("mediaPlayerStart =$mediaPlayer")
 
                 } else {
                     toastMessage.tryEmit(R.string.error_server)

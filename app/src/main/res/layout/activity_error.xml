@@ -15,18 +15,20 @@
         android:src="@drawable/ic_error_network"
         app:layout_constraintBottom_toTopOf="@+id/errorTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/errorTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         android:gravity="center|top"
-        android:text="@string/error_network"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/error_network" />
 
     <ImageView
         android:id="@+id/refreshButton"
