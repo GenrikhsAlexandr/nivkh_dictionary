@@ -25,10 +25,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         Handler(Looper.getMainLooper()).postDelayed({
-            if (savedInstanceState == null) {
-                supportFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    add<MainFragment>(R.id.container)
+            if (!isFinishing && !isDestroyed) {
+                if (savedInstanceState == null) {
+                    supportFragmentManager.commit {
+                        setReorderingAllowed(true)
+                        add<MainFragment>(R.id.container)
+                    }
                 }
             }
             binding.lottieAnimationView.isVisible = false
@@ -36,5 +38,4 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
     }
-
 }
