@@ -102,9 +102,8 @@
 
             <Button
                 android:id="@+id/letter1"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -117,9 +116,8 @@
 
             <Button
                 android:id="@+id/letter2"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -132,9 +130,8 @@
 
             <Button
                 android:id="@+id/letter3"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -147,9 +144,8 @@
 
             <Button
                 android:id="@+id/letter4"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -162,9 +158,8 @@
 
             <Button
                 android:id="@+id/letter5"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -180,16 +175,15 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="48dp"
             android:background="@color/white"
             android:gravity="center"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/letter6"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -202,9 +196,8 @@
 
             <Button
                 android:id="@+id/letter7"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -217,9 +210,8 @@
 
             <Button
                 android:id="@+id/letter8"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -232,9 +224,8 @@
 
             <Button
                 android:id="@+id/letter9"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"
@@ -247,9 +238,8 @@
 
             <Button
                 android:id="@+id/letter10"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="8dp"
                 android:backgroundTint="#94E9FA"
                 android:gravity="center"

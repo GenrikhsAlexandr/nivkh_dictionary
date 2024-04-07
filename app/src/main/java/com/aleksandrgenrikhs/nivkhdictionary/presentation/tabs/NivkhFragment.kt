@@ -11,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -73,17 +72,6 @@ class NivkhFragment : Fragment() {
         binding.rvWord.adapter = adapter
         subscribe()
         refresh()
-        getWords()
-    }
-
-    private fun getWords() {
-        viewModel.viewModelScope.launch {
-            when (val word = viewModel.getWordsForStart()) {
-                is ResultState.Success -> viewModel.getWords()
-                is ResultState.Error ->
-                    startErrorActivity(word.message)
-            }
-        }
     }
 
     private fun refresh() {

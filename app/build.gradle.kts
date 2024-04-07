@@ -14,8 +14,8 @@ android {
         applicationId = "com.aleksandrgenrikhs.nivkhdictionary"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.1"
+        versionCode = 5
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,8 +45,6 @@ android {
 dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
-
-    implementation("com.airbnb.android:lottie:4.2.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
 
@@ -83,5 +81,8 @@ dependencies {
     implementation("com.google.dagger:dagger:2.46.1")
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
 
 }

@@ -3,10 +3,10 @@
     <style name="Base.Theme.NivkhDictionary" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="colorControlActivated">@color/white</item>
+        <item name="colorPrimary">#009EBD</item>
         <item name="android:editTextColor">@color/white</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <item name="android:windowIsTranslucent">true</item>
-
         <item name="android:actionOverflowButtonStyle">@style/MyOverflowButtonStyle</item>
     </style>
 
@@ -30,6 +30,13 @@
         <item name="materialAlertDialogTitleTextStyle">
             @style/MaterialAlertDialog.Material3.Title.Text.CenterStacked
         </item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#009EBD</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.NivkhDictionary</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
     </style>
 
 </resources>

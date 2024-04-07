@@ -104,8 +104,15 @@ class MainViewModel
         }
     }
 
+    init {
+        viewModelScope.launch {
+            getWords()
+        }
+    }
+
     fun getWords() {
         viewModelScope.launch {
+            println("getWords = ${interactor.getWords()}")
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
             interactor.getWords()
