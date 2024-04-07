@@ -1,7 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +17,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
-import com.aleksandrgenrikhs.nivkhdictionary.presentation.ErrorActivity
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
@@ -116,13 +114,6 @@ class NivkhFragment : Fragment() {
             }
         }
     }
-
-    private fun startErrorActivity(errorMessage: Int) {
-        val intent = Intent(requireContext(), ErrorActivity::class.java)
-        intent.putExtra(ERROR_MESSAGE_KEY, errorMessage)
-        startActivity(intent)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
