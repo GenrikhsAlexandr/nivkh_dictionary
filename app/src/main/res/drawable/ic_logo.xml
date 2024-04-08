@@ -1,13 +1,16 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="60dp"
     android:height="60dp"
-    android:viewportWidth="60"
-    android:viewportHeight="60">
+    android:viewportWidth="120"
+    android:viewportHeight="120">
 
     <group
         android:name="animationGroup"
         android:pivotX="30"
-        android:pivotY="30">
+        android:pivotY="30"
+        android:rotation="0"
+        android:translateX="30"
+        android:translateY="30">
 
         <path
             android:fillColor="#000000"
