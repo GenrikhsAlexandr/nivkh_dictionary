@@ -1,12 +1,8 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.add
@@ -27,46 +23,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         (applicationContext as WordApplication).applicationComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        installSplashScreen().apply {
-            setOnExitAnimationListener { screen ->
-                val zoomX = ObjectAnimator.ofFloat(
-                    screen.iconView,
-                    View.SCALE_X,
-                    1.0f,
-                    0.0f
-                )
-                zoomX.interpolator = LinearInterpolator()
-                zoomX.duration = 1000L
-                zoomX.doOnEnd { screen.remove() }
 
-                val zoomY = ObjectAnimator.ofFloat(
-                    screen.iconView,
-                    View.SCALE_Y,
-                    1.0f,
-                    0.0f
-                )
-                zoomY.interpolator = LinearInterpolator()
-                zoomY.duration = 1500L
-                zoomY.doOnEnd { screen.remove() }
-
-                val rotation = ObjectAnimator.ofFloat(
-                    screen.iconView,
-                    View.ROTATION,
-                    0f,
-                    360f
-                )
-                rotation.interpolator = LinearInterpolator()
-                rotation.duration = 1500L
-
-                zoomX.start()
-                zoomY.start()
-                rotation.start()
-            }
-        }
         setContentView(binding.root)
         getWords()
     }
