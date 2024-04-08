@@ -82,6 +82,11 @@ class EnglishFragment : Fragment() {
                 binding.rvWord.isVisible = it
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isWordNotFound.collect {
+                binding.wordNotFound.isVisible = it
+            }
+        }
     }
 
     override fun onDestroyView() {

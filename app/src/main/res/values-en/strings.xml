@@ -28,6 +28,7 @@ The audio dictionary can be used by everyone: those who wish to learn the Nivkh 
     <string name="Russia">RU</string>
     <string name="English">EN</string>
     <string name="empty">Empty</string>
+    <string name="nothingFound">Nothing found</string>
     <string name="error_message">An error has occurred, check your internet connection</string>
     <string name="error_message_response">Something went wrong</string>
     <string name="error_server">Server error</string>

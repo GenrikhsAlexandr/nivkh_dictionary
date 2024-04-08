@@ -24,4 +24,15 @@
         app:indicatorColor="@color/ic_launcher_background">
 
     </com.google.android.material.progressindicator.CircularProgressIndicator>
+
+    <TextView
+        android:id="@+id/wordNotFound"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/nothingFound"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textColor="@color/buttonSheet"
+        android:visibility="gone" />
+
 </FrameLayout>

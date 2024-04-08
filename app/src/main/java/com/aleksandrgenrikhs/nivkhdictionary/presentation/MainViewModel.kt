@@ -31,6 +31,9 @@ class MainViewModel
     private val application: Application
 ) : ViewModel() {
 
+    private val _isWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isWordNotFound: StateFlow<Boolean> = _isWordNotFound
+
     private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
     val isSelected: StateFlow<Word?> = _isSelected
 
@@ -57,7 +60,6 @@ class MainViewModel
     ) { request, words ->
         words.filterByRequest(request = request)
     }.map { words ->
-
         words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -67,6 +69,7 @@ class MainViewModel
     ) { request, words ->
         words.filterByRequest(request = request)
     }.map { words ->
+        _isWordNotFound.value = words.isEmpty() && !isProgressBarVisible.value
         words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -112,9 +115,10 @@ class MainViewModel
 
     fun getWords() {
         viewModelScope.launch {
-            println("getWords = ${interactor.getWords()}")
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
+            println("isProgressBarVisible = ${isProgressBarVisible.value}")
+            println("isfoundWordsgetWords = ${isWordNotFound.value}")
             interactor.getWords()
             isProgressBarVisible.value = false
             isRvWordVisible.value = true
