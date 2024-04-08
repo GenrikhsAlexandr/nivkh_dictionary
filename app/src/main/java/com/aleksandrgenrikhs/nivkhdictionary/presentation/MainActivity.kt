@@ -21,14 +21,17 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
+    private var isReady = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        installSplashScreen().apply {
+            setKeepOnScreenCondition { !isReady }
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         (applicationContext as WordApplication).applicationComponent.inject(this)
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         getWords()
     }
@@ -36,15 +39,20 @@ class MainActivity : AppCompatActivity() {
     private fun getWords() {
         viewModel.viewModelScope.launch {
             when (val word = viewModel.getWordsForStart()) {
-                is ResultState.Success -> startFragment()
-                is ResultState.Error ->
+                is ResultState.Success -> {
+                    isReady = true
+                    startFragment()
+                }
+
+                is ResultState.Error -> {
+                    isReady = true
                     startErrorActivity(word.message)
+                }
             }
         }
     }
 
     private fun startFragment() {
-        setContentView(binding.root)
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             add<MainFragment>(R.id.container)
