@@ -66,9 +66,12 @@ class FavoritesFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.favoritesWords.collect { words ->
-                binding.tvEmpty.isVisible = words.isEmpty()
-                binding.rvWord.isVisible = words.isNotEmpty()
                 adapter.submitList(words)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isFavoriteWordNotFound.collect { isFound ->
+                binding.tvEmpty.isVisible = isFound
             }
         }
     }

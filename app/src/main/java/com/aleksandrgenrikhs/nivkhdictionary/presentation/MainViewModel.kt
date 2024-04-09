@@ -34,6 +34,9 @@ class MainViewModel
     private val _isWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isWordNotFound: StateFlow<Boolean> = _isWordNotFound
 
+    private val _isFavoriteWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isFavoriteWordNotFound: StateFlow<Boolean> = _isFavoriteWordNotFound
+
     private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
     val isSelected: StateFlow<Word?> = _isSelected
 
@@ -60,6 +63,7 @@ class MainViewModel
     ) { request, words ->
         words.filterByRequest(request = request)
     }.map { words ->
+        _isFavoriteWordNotFound.value = words.isEmpty()
         words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 

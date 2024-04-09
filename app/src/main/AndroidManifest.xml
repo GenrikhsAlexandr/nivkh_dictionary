@@ -20,9 +20,8 @@
         <activity
             android:name=".presentation.ErrorActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Base.Theme.NivkhDictionary"
-            tools:ignore="LockedOrientationActivity" />
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Base.Theme.NivkhDictionary" />
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
