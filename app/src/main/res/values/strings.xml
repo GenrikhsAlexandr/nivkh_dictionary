@@ -19,7 +19,6 @@
 
     <string name="Russia">RU</string>
     <string name="English">EN</string>
-    <string name="empty">Список пуст</string>
     <string name="nothingFound">Ничего не найдено</string>
     <string name="word_not_found">Слово не найдено</string>
     <string name="dialog_update_words_title">Обновление базы слов…</string>

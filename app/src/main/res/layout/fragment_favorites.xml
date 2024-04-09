@@ -10,7 +10,6 @@
         android:id="@+id/rvWord"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="7"
         tools:listitem="@layout/list_item_word" />
@@ -20,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="@string/empty"
+        android:text="@string/nothingFound"
         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
         android:textColor="@color/buttonSheet"
         android:visibility="visible" />
