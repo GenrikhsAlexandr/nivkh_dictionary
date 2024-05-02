@@ -1,5 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.domain
 
+import android.media.MediaPlayer
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -20,4 +21,8 @@ class WordInteractor @Inject constructor(
     suspend fun updateWord() = repository.updateWords()
 
     suspend fun isFavorite(word: Word) = repository.isFavorite(word)
+
+    suspend fun wordSounds(uri: String): ResultState<MediaPlayer?> = repository.initPlayer(uri)
+
+    fun playerDestroy() = repository.playerDestroy()
 }

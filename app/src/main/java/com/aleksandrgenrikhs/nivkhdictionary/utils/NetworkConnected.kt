@@ -3,10 +3,11 @@ package com.aleksandrgenrikhs.nivkhdictionary.utils
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import com.aleksandrgenrikhs.nivkhdictionary.domain.NetworkConnectionChecker
 
-object NetworkConnected {
+object NetworkConnected : NetworkConnectionChecker {
 
-    fun isNetworkConnected(context: Context): Boolean {
+    override fun isNetworkConnected(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkCapabilities =

@@ -1,8 +1,5 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import android.app.Application
-import android.media.MediaPlayer
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -10,7 +7,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
-import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -22,13 +18,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.IOException
 import javax.inject.Inject
 
 class MainViewModel
 @Inject constructor(
     private val interactor: WordInteractor,
-    private val application: Application
 ) : ViewModel() {
 
     private val _isWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -40,13 +34,16 @@ class MainViewModel
     private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
     val isSelected: StateFlow<Word?> = _isSelected
 
-    private var mediaPlayer: MediaPlayer? = null
     private val searchRequest: MutableStateFlow<String> = MutableStateFlow("")
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isClickable: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val toastMessageError: MutableSharedFlow<ResultState.Error> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
@@ -71,6 +68,7 @@ class MainViewModel
         searchRequest,
         interactor.getWords()
     ) { request, words ->
+        println("interactor.getWords() = ${interactor.getWords()}")
         words.filterByRequest(request = request)
     }.map { words ->
         _isWordNotFound.value = words.isEmpty() && !isProgressBarVisible.value
@@ -121,8 +119,6 @@ class MainViewModel
         viewModelScope.launch {
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
-            println("isProgressBarVisible = ${isProgressBarVisible.value}")
-            println("isfoundWordsgetWords = ${isWordNotFound.value}")
             interactor.getWords()
             isProgressBarVisible.value = false
             isRvWordVisible.value = true
@@ -162,44 +158,28 @@ class MainViewModel
         _isSelected.value = word
     }
 
-    private fun createPlayer(): MediaPlayer? {
-        val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code) ?: return null
-        val url = "${nvLocale.audioPath}"
-        return try {
-            MediaPlayer.create(application, Uri.parse(url))
-        } catch (e: IOException) {
-            null
-        }
-    }
-
-    fun play() {
+    fun soundWord() {
         viewModelScope.launch(Dispatchers.IO) {
             isClickable.value = false
-            if (NetworkConnected.isNetworkConnected(application)) {
-                mediaPlayer = createPlayer()
-                if (mediaPlayer != null) {
-                    createPlayer()?.start()
-
-                } else {
-                    toastMessage.tryEmit(R.string.error_server)
-                    playerDestroy()
+            val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code)
+            val url = "${nvLocale?.audioPath}"
+            when (val sound = interactor.wordSounds(url)) {
+                is ResultState.Error -> {
+                    interactor.playerDestroy()
+                    toastMessageError.tryEmit(ResultState.Error(sound.message))
                 }
-            } else {
-                toastMessage.tryEmit(R.string.error_message)
-                playerDestroy()
+
+                is ResultState.Success -> {
+                    sound.data?.start()
+                }
             }
             isClickable.value = true
         }
     }
 
-    private fun playerDestroy() {
-        mediaPlayer?.release()
-        mediaPlayer = null
-    }
-
     fun wordDetailsDestroy() {
         _isSelected.value = null
-        playerDestroy()
+        interactor.playerDestroy()
     }
 
     fun searchDestroy() {

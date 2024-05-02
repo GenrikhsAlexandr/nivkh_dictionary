@@ -83,6 +83,11 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.toastMessageError.collect { error ->
+                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isSelected.collect { word ->
                 with(binding) {
                     nvWord.text =
@@ -106,7 +111,9 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
 
     private fun sound() {
         binding.speakButton.setOnClickListener {
-            viewModel.play()
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.soundWord()
+            }
         }
     }
 

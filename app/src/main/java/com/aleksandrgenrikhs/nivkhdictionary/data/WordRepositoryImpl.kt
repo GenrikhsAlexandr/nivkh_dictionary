@@ -1,8 +1,11 @@
 package com.aleksandrgenrikhs.nivkhdictionary.data
 
 import android.app.Application
+import android.media.MediaPlayer
+import android.net.Uri
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
+import com.aleksandrgenrikhs.nivkhdictionary.domain.NetworkConnectionChecker
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
@@ -19,18 +22,21 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import java.io.IOException
 import javax.inject.Inject
 
 class WordRepositoryImpl @Inject constructor(
     private val wordDao: WordDao,
     private val wordMapper: WordMapper,
-    private val networkConnected: NetworkConnected,
+    private val networkConnected: NetworkConnectionChecker,
     private val application: Application,
 ) : WordRepository {
 
     companion object {
         const val BASE_URL = "http://bibl-nogl-dictionary.ru"
     }
+
+    private var mediaPlayer: MediaPlayer? = null
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -45,7 +51,7 @@ class WordRepositoryImpl @Inject constructor(
             )
         }.build()).build()
 
-    private val service: WordService = retrofit.create(WordService::class.java)
+    private val service: ApiService = retrofit.create(ApiService::class.java)
 
     override suspend fun getWordStartApp(): ResultState<List<Word>> {
         val wordsFromDb = wordDao.getWords().firstOrNull()
@@ -107,5 +113,28 @@ class WordRepositoryImpl @Inject constructor(
     override suspend fun isFavorite(word: Word): Boolean {
         val wordDbFavorite = wordDao.getWordById(word.id)
         return wordDbFavorite != null
+    }
+
+    override suspend fun initPlayer(url: String): ResultState<MediaPlayer?> {
+        return if (!NetworkConnected.isNetworkConnected(application)) {
+            ResultState.Error(R.string.error_message)
+        } else {
+            try {
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(application, Uri.parse(url))
+                    prepare()
+                    start()
+                }
+                ResultState.Success(mediaPlayer)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                ResultState.Error(R.string.error_server)
+            }
+        }
+    }
+
+    override fun playerDestroy() {
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }

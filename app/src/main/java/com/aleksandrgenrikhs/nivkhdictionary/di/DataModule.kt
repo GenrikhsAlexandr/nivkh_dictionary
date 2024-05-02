@@ -4,6 +4,7 @@ import android.app.Application
 import com.aleksandrgenrikhs.nivkhdictionary.data.WordRepositoryImpl
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.AppDatabase
 import com.aleksandrgenrikhs.nivkhdictionary.data.database.WordDao
+import com.aleksandrgenrikhs.nivkhdictionary.domain.NetworkConnectionChecker
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.aleksandrgenrikhs.nivkhdictionary.utils.NetworkConnected
 import dagger.Binds
@@ -27,6 +28,6 @@ interface DataModule {
 
         @Provides
         @Singleton
-        fun networkConnected(): NetworkConnected = NetworkConnected
+        fun provideNetworkConnected(): NetworkConnectionChecker = NetworkConnected
     }
 }
