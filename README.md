@@ -1,4 +1,4 @@
-# Nivkh people dictionary for android
+# Nivkh Language Dictionary for Android
 
 App for translation between Nivkh, Russian and English.
 ***

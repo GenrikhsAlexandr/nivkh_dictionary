@@ -1,5 +1,6 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -8,6 +9,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
+import com.aleksandrgenrikhs.nivkhdictionary.utils.WordMediaPlayer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +25,8 @@ import javax.inject.Inject
 class MainViewModel
 @Inject constructor(
     private val interactor: WordInteractor,
+    private val application: Application,
+    private val player: WordMediaPlayer
 ) : ViewModel() {
 
     private val _isWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -68,16 +72,25 @@ class MainViewModel
         searchRequest,
         interactor.getWords()
     ) { request, words ->
-        println("interactor.getWords() = ${interactor.getWords()}")
         words.filterByRequest(request = request)
     }.map { words ->
         _isWordNotFound.value = words.isEmpty() && !isProgressBarVisible.value
         words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    init {
+        viewModelScope.launch {
+            getWords()
+        }
+    }
+
     suspend fun getWordsForStart(): ResultState<List<Word>> {
         isProgressBarVisible.value = true
-        return interactor.getWordForStartApp()
+        return if (!interactor.isNetWorkConnected()) {
+            ResultState.Error(R.string.error_message)
+        } else {
+            interactor.getWordForStartApp()
+        }
     }
 
     private fun List<Word>.filterByRequest(request: String): List<Word> {
@@ -106,12 +119,6 @@ class MainViewModel
             WordListItem(
                 word = word
             )
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            getWords()
         }
     }
 
@@ -151,38 +158,38 @@ class MainViewModel
     }
 
     suspend fun updateWords(): ResultState<List<Word>> {
-        return interactor.updateWord()
+        return if (!interactor.isNetWorkConnected()) {
+            ResultState.Error(R.string.error_message)
+        } else {
+            interactor.updateWord()
+        }
     }
 
     fun onWordClicked(word: Word) {
         _isSelected.value = word
     }
 
-    fun soundWord() {
+    fun searchDestroy() {
+        isSearchViewVisible.value = false
+    }
+
+    fun playWord() {
         viewModelScope.launch(Dispatchers.IO) {
             isClickable.value = false
+            if (!interactor.isNetWorkConnected()) {
+                toastMessage.tryEmit(R.string.error_message)
+            }
             val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code)
             val url = "${nvLocale?.audioPath}"
-            when (val sound = interactor.wordSounds(url)) {
-                is ResultState.Error -> {
-                    interactor.playerDestroy()
-                    toastMessageError.tryEmit(ResultState.Error(sound.message))
-                }
-
-                is ResultState.Success -> {
-                    sound.data?.start()
-                }
+            when (val result = player.initPlayer(application, url)) {
+                null -> toastMessageError.tryEmit(ResultState.Error(R.string.error_server))
+                else -> result.start()
             }
             isClickable.value = true
         }
     }
 
-    fun wordDetailsDestroy() {
-        _isSelected.value = null
-        interactor.playerDestroy()
-    }
-
-    fun searchDestroy() {
-        isSearchViewVisible.value = false
+    fun destroyPlayer() {
+        player.destroyPlayer()
     }
 }

@@ -63,7 +63,7 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
             }
         }
         subscribe()
-        sound()
+        playWord()
         return binding.root
     }
 
@@ -109,11 +109,9 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun sound() {
+    private fun playWord() {
         binding.speakButton.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.soundWord()
-            }
+            viewModel.playWord()
         }
     }
 
@@ -125,6 +123,6 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-        viewModel.wordDetailsDestroy()
+        viewModel.destroyPlayer()
     }
 }
