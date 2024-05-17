@@ -3,7 +3,7 @@
     <style name="Base.Theme.NivkhDictionary" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="colorControlActivated">@color/white</item>
-        <item name="colorPrimary">#009EBD</item>
+        <item name="colorPrimary">@color/ic_launcher_background</item>
         <item name="android:editTextColor">@color/white</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <item name="android:windowIsTranslucent">true</item>

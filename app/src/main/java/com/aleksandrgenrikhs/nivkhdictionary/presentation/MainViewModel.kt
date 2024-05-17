@@ -10,7 +10,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import com.aleksandrgenrikhs.nivkhdictionary.utils.WordMediaPlayer
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,25 +29,25 @@ class MainViewModel
     private val player: WordMediaPlayer
 ) : ViewModel() {
 
+    private lateinit var initPlayerJob: Job
+
     private val _isWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isWordNotFound: StateFlow<Boolean> = _isWordNotFound
 
     private val _isFavoriteWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isFavoriteWordNotFound: StateFlow<Boolean> = _isFavoriteWordNotFound
 
+    private val _isReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isReady: StateFlow<Boolean> = _isReady
+
     private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
     val isSelected: StateFlow<Word?> = _isSelected
-
+    private val errorResponse: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val searchRequest: MutableStateFlow<String> = MutableStateFlow("")
     val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isClickable: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    val toastMessageError: MutableSharedFlow<ResultState.Error> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
@@ -78,19 +78,46 @@ class MainViewModel
         words.mapToWordListItem()
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    val isErrorLayoutVisible: StateFlow<Boolean> = combine(
+        _isReady,
+        errorResponse
+    ) { isReady, isErrorLayoutVisible ->
+        isReady && !isErrorLayoutVisible
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     init {
         viewModelScope.launch {
             getWords()
         }
     }
 
-    suspend fun getWordsForStart(): ResultState<List<Word>> {
-        isProgressBarVisible.value = true
-        return if (!interactor.isNetWorkConnected()) {
-            ResultState.Error(R.string.error_message)
-        } else {
-            interactor.getWordForStartApp()
+    fun getWordsForStart() {
+        viewModelScope.launch {
+            when (val result = interactor.getWordForStartApp()) {
+                is ResultState.Error -> {
+                    if (!interactor.isNetWorkConnected()) {
+                        toastMessage.tryEmit(R.string.error_message)
+                    } else {
+                        toastMessage.tryEmit(result.message)
+                    }
+                    errorResponse.tryEmit(true)
+                }
+
+                is ResultState.Success -> {
+                    result.data
+                    errorResponse.tryEmit(false)
+
+                }
+            }
+            _isReady.tryEmit(true)
+            isProgressBarVisible.tryEmit(false)
+
         }
+    }
+
+    fun refresh() {
+        isProgressBarVisible.tryEmit(true)
+        getWordsForStart()
     }
 
     private fun List<Word>.filterByRequest(request: String): List<Word> {
@@ -122,7 +149,7 @@ class MainViewModel
         }
     }
 
-    fun getWords() {
+    private fun getWords() {
         viewModelScope.launch {
             isProgressBarVisible.value = true
             isRvWordVisible.value = false
@@ -157,11 +184,20 @@ class MainViewModel
         searchRequest.value = query
     }
 
-    suspend fun updateWords(): ResultState<List<Word>> {
-        return if (!interactor.isNetWorkConnected()) {
-            ResultState.Error(R.string.error_message)
-        } else {
-            interactor.updateWord()
+    fun updateWords() {
+        viewModelScope.launch {
+            when (val result = interactor.updateWord()) {
+                is ResultState.Error -> {
+                    if (!interactor.isNetWorkConnected()) {
+                        ResultState.Error(R.string.error_message)
+                    } else
+                        toastMessage.tryEmit(result.message)
+                }
+
+                is ResultState.Success -> {
+                    toastMessage.tryEmit(R.string.update_words)
+                }
+            }
         }
     }
 
@@ -173,23 +209,27 @@ class MainViewModel
         isSearchViewVisible.value = false
     }
 
-    fun playWord() {
-        viewModelScope.launch(Dispatchers.IO) {
-            isClickable.value = false
+    fun initPlayer() {
+        initPlayerJob = viewModelScope.launch {
             if (!interactor.isNetWorkConnected()) {
                 toastMessage.tryEmit(R.string.error_message)
+            } else {
+                val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code)
+                val url = "${nvLocale?.audioPath}"
+                val result = player.initPlayer(application, url)
+                if (result == null) {
+                    toastMessage.tryEmit(R.string.error_server)
+                }
             }
-            val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code)
-            val url = "${nvLocale?.audioPath}"
-            when (val result = player.initPlayer(application, url)) {
-                null -> toastMessageError.tryEmit(ResultState.Error(R.string.error_server))
-                else -> result.start()
-            }
-            isClickable.value = true
         }
+    }
+
+    fun speakWord() {
+        player.play()
     }
 
     fun destroyPlayer() {
         player.destroyPlayer()
+        initPlayerJob.cancel()
     }
 }

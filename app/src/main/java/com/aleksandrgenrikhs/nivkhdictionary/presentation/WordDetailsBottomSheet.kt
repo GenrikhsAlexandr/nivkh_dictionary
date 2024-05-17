@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -55,6 +54,11 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
             container,
             false
         )
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.favoritesButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.onFavoriteButtonClicked()
@@ -62,9 +66,9 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
                 dismiss()
             }
         }
+        viewModel.initPlayer()
         subscribe()
-        playWord()
-        return binding.root
+        clickSpeakButton()
     }
 
     private fun subscribe() {
@@ -75,16 +79,6 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
                 } else {
                     binding.favoritesButton.setIconResource(R.drawable.ic_favorites_no_selected)
                 }
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.toastMessage.collect { message ->
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.toastMessageError.collect { error ->
-                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
@@ -102,16 +96,11 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
                 }
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isClickable.collect { isClickable ->
-                binding.speakButton.isClickable = isClickable
-            }
-        }
     }
 
-    private fun playWord() {
+    private fun clickSpeakButton() {
         binding.speakButton.setOnClickListener {
-            viewModel.playWord()
+            viewModel.speakWord()
         }
     }
 
@@ -120,8 +109,8 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
         dismiss()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
         viewModel.destroyPlayer()
     }

@@ -22,7 +22,7 @@
     <string name="nothingFound">Ничего не найдено</string>
     <string name="word_not_found">Слово не найдено</string>
     <string name="dialog_update_words_title">Обновление базы слов…</string>
-    <string name="update_words_title">База слов обновлена</string>
+    <string name="update_words">База слов обновлена</string>
     <string name="error_message">Произошла ошибка, проверьте подключение к интернету</string>
     <string name="error_message_response">Что-то пошло не так</string>
     <string name="error_server">Ошибка сервера</string>

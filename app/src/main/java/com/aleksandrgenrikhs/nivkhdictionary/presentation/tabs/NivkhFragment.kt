@@ -20,11 +20,8 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.MainViewModel
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.WordDetailsBottomSheet
 import com.aleksandrgenrikhs.nivkhdictionary.presentation.adapter.WordAdapter
-import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-const val ERROR_MESSAGE_KEY = "error_message"
 
 class NivkhFragment : Fragment() {
 
@@ -77,22 +74,7 @@ class NivkhFragment : Fragment() {
         swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
         swipeRefresh.setOnRefreshListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                when (val updateWord = viewModel.updateWords()) {
-                    is ResultState.Success -> {
-                        viewModel.getWords()
-                        Toast.makeText(
-                            requireContext(),
-                            R.string.update_words_title,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
-                    is ResultState.Error -> Toast.makeText(
-                        requireContext(),
-                        getString(updateWord.message),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+              viewModel.updateWords()
                 swipeRefresh.isRefreshing = false
             }
         }
@@ -116,6 +98,11 @@ class NivkhFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isWordNotFound.collect {
                 binding.wordNotFound.isVisible = it
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.toastMessage.collect { error ->
+                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
             }
         }
     }

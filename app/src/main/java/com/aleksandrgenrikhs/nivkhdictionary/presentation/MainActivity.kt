@@ -1,18 +1,16 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.WordApplication
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.ActivityMainBinding
-import com.aleksandrgenrikhs.nivkhdictionary.presentation.tabs.ERROR_MESSAGE_KEY
-import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,11 +19,10 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
-    private var isReady = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
-            setKeepOnScreenCondition { !isReady }
+            setKeepOnScreenCondition { !viewModel.isReady.value }
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         (applicationContext as WordApplication).applicationComponent.inject(this)
@@ -33,22 +30,38 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        getWords()
+        viewModel.getWordsForStart()
+        subscribe()
+        clickRefresh()
     }
 
-    private fun getWords() {
+    private fun subscribe() {
+        with(binding) {
         viewModel.viewModelScope.launch {
-            when (val word = viewModel.getWordsForStart()) {
-                is ResultState.Success -> {
-                    isReady = true
-                    startFragment()
-                }
-
-                is ResultState.Error -> {
-                    isReady = true
-                    startErrorActivity(word.message)
+                viewModel.isErrorLayoutVisible.collect { isVisible ->
+                    errorLayout.isVisible = !isVisible
+                    if (isVisible) {
+                        startFragment()
+                    }
                 }
             }
+            viewModel.viewModelScope.launch {
+                viewModel.toastMessage.collect { message ->
+                    errorTitle.setText(message)
+                }
+            }
+            viewModel.viewModelScope.launch {
+                viewModel.isProgressBarVisible.collect { isVisible ->
+                    progressBar.isVisible = isVisible
+                    errorTitle.isVisible = !isVisible
+                }
+            }
+        }
+    }
+
+    private fun clickRefresh() {
+        binding.refreshButton.setOnClickListener {
+            viewModel.refresh()
         }
     }
 
@@ -57,11 +70,5 @@ class MainActivity : AppCompatActivity() {
             setReorderingAllowed(true)
             add<MainFragment>(R.id.container)
         }
-    }
-
-    private fun startErrorActivity(errorMessage: Int) {
-        val intent = Intent(this, ErrorActivity::class.java)
-        intent.putExtra(ERROR_MESSAGE_KEY, errorMessage)
-        startActivity(intent)
     }
 }

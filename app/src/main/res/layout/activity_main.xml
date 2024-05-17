@@ -1,12 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#009EBD"
+    android:background="@color/ic_launcher_background"
     android:gravity="center"
-    android:orientation="vertical"
     tools:context=".presentation.MainActivity">
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+    <LinearLayout
+        android:id="@+id/errorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/errorImg"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="@string/error_network"
+        android:src="@drawable/ic_error_network" />
+
+    <TextView
+        android:id="@+id/errorTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        tools:text="@string/error_network" />
+
+    <ImageView
+        android:id="@+id/refreshButton"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="32dp"
+        android:clickable="true"
+        android:src="@drawable/icon_button"
+        android:text="@string/error_network" />
+
+    <TextView
+        android:id="@+id/refreshTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:text="@string/refresh"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+    </LinearLayout>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        app:indicatorColor="@color/white"/>
+
+</FrameLayout>
