@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -94,6 +95,11 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
                         word?.locales?.get(Language.ENGLISH.code)?.value
                             ?: getString(R.string.no_data)
                 }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isButtonVisible.collect { isVisible ->
+                binding.speakButton.isVisible = isVisible
             }
         }
     }

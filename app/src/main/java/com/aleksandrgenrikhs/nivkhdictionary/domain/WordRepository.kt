@@ -20,4 +20,6 @@ interface WordRepository {
     suspend fun isFavorite(word: Word): Boolean
 
     fun isNetWorkConnected(): Boolean
+
+    suspend fun isUrlExist(wordId: Int): Boolean
 }

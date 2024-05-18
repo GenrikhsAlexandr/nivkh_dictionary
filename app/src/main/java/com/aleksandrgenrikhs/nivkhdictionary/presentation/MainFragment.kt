@@ -62,7 +62,7 @@ class MainFragment : Fragment() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             return@setOnMenuItemClickListener when (item.itemId) {
                 R.id.search -> {
-                    viewModel.isSearchViewVisible.value = true
+                    viewModel.searchShow(true)
                     true
                 }
 
@@ -82,7 +82,7 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.app_name)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    viewModel.isSearchViewVisible.value = false
+                    viewModel.searchShow(false)
                     true
                 }
 
@@ -94,7 +94,7 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.favorites)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    viewModel.isSearchViewVisible.value = false
+                    viewModel.searchShow(false)
                     true
                 }
 
@@ -106,7 +106,7 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.about)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
-                    viewModel.isSearchViewVisible.value = false
+                    viewModel.searchShow(false)
                     true
                 }
 
@@ -123,7 +123,7 @@ class MainFragment : Fragment() {
 
     private fun onBackIconClick() {
         binding.iconBack.setOnClickListener {
-            viewModel.isSearchViewVisible.value = false
+            viewModel.searchShow(false)
         }
     }
 

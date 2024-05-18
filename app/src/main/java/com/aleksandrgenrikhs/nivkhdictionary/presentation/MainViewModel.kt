@@ -10,7 +10,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
 import com.aleksandrgenrikhs.nivkhdictionary.utils.WordMediaPlayer
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +28,6 @@ class MainViewModel
     private val player: WordMediaPlayer
 ) : ViewModel() {
 
-    private lateinit var initPlayerJob: Job
-
     private val _isWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isWordNotFound: StateFlow<Boolean> = _isWordNotFound
 
@@ -42,11 +39,23 @@ class MainViewModel
 
     private val _isSelected: MutableStateFlow<Word?> = MutableStateFlow(null)
     val isSelected: StateFlow<Word?> = _isSelected
+
     private val errorResponse: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val searchRequest: MutableStateFlow<String> = MutableStateFlow("")
-    val isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    private val _isSearchViewVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isSearchViewVisible: StateFlow<Boolean> = _isSearchViewVisible
+
+    private val _isProgressBarVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isProgressBarVisible: StateFlow<Boolean> = _isProgressBarVisible
+
+    private val _isRvWordVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRvWordVisible: StateFlow<Boolean> = _isRvWordVisible
+
+    private val _isButtonVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isButtonVisible: StateFlow<Boolean> = _isButtonVisible
+
+
     val toastMessage: MutableSharedFlow<Int> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
@@ -110,13 +119,13 @@ class MainViewModel
                 }
             }
             _isReady.tryEmit(true)
-            isProgressBarVisible.tryEmit(false)
+            _isProgressBarVisible.tryEmit(false)
 
         }
     }
 
     fun refresh() {
-        isProgressBarVisible.tryEmit(true)
+        _isProgressBarVisible.tryEmit(true)
         getWordsForStart()
     }
 
@@ -151,11 +160,11 @@ class MainViewModel
 
     private fun getWords() {
         viewModelScope.launch {
-            isProgressBarVisible.value = true
-            isRvWordVisible.value = false
+            _isProgressBarVisible.value = true
+            _isRvWordVisible.value = false
             interactor.getWords()
-            isProgressBarVisible.value = false
-            isRvWordVisible.value = true
+            _isProgressBarVisible.value = false
+            _isRvWordVisible.value = true
         }
     }
 
@@ -205,23 +214,29 @@ class MainViewModel
         _isSelected.value = word
     }
 
+    fun searchShow(value:Boolean) {
+        _isSearchViewVisible.value = value
+    }
+
     fun searchDestroy() {
-        isSearchViewVisible.value = false
+        _isSearchViewVisible.value = false
     }
 
     fun initPlayer() {
-        initPlayerJob = viewModelScope.launch {
+        viewModelScope.launch {
             if (!interactor.isNetWorkConnected()) {
                 toastMessage.tryEmit(R.string.error_message)
-            } else {
-                val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code)
-                val url = "${nvLocale?.audioPath}"
-                val result = player.initPlayer(application, url)
-                if (result == null) {
-                    toastMessage.tryEmit(R.string.error_server)
-                }
+            }
+            val wordId = isSelected.value!!.id
+            val isUrlExist = interactor.isUrlExist(wordId)
+            val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code)
+            val url = "${nvLocale?.audioPath}"
+            val player = isUrlExist?.let { player.initPlayer(application, url, isUrlExist) }
+            if (player == null) {
+                _isButtonVisible.tryEmit(false)
             }
         }
+        _isButtonVisible.tryEmit(true)
     }
 
     fun speakWord() {
@@ -230,6 +245,5 @@ class MainViewModel
 
     fun destroyPlayer() {
         player.destroyPlayer()
-        initPlayerJob.cancel()
     }
 }

@@ -87,4 +87,12 @@ class WordRepositoryImpl @Inject constructor(
     override fun isNetWorkConnected(): Boolean {
         return networkConnected.isNetworkConnected(application)
     }
+
+    override suspend fun isUrlExist(wordId: Int): Boolean {
+        return try {
+            service.getAudioWord(wordId).isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

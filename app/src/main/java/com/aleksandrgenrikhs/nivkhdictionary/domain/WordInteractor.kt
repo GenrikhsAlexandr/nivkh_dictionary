@@ -22,4 +22,6 @@ class WordInteractor @Inject constructor(
     suspend fun isFavorite(word: Word) = repository.isFavorite(word)
 
     fun isNetWorkConnected() = repository.isNetWorkConnected()
+
+    suspend fun isUrlExist(wordId: Int) =  repository.isUrlExist(wordId)
 }
