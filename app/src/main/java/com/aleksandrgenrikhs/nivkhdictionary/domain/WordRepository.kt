@@ -22,4 +22,10 @@ interface WordRepository {
     fun isNetWorkConnected(): Boolean
 
     suspend fun isUrlExist(wordId: Int): Boolean
+
+    suspend fun initPlayer(url: String, isUrlExist: Boolean)
+
+    fun play()
+
+    fun destroyPlayer()
 }

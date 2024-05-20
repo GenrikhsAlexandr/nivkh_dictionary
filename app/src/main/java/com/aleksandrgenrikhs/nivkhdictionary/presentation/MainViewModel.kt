@@ -1,6 +1,5 @@
 package com.aleksandrgenrikhs.nivkhdictionary.presentation
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
@@ -9,7 +8,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordInteractor
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordListItem
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
-import com.aleksandrgenrikhs.nivkhdictionary.utils.WordMediaPlayer
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,8 +22,6 @@ import javax.inject.Inject
 class MainViewModel
 @Inject constructor(
     private val interactor: WordInteractor,
-    private val application: Application,
-    private val player: WordMediaPlayer
 ) : ViewModel() {
 
     private val _isWordNotFound: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -106,6 +102,7 @@ class MainViewModel
                 is ResultState.Error -> {
                     if (!interactor.isNetWorkConnected()) {
                         toastMessage.tryEmit(R.string.error_message)
+
                     } else {
                         toastMessage.tryEmit(result.message)
                     }
@@ -214,7 +211,7 @@ class MainViewModel
         _isSelected.value = word
     }
 
-    fun searchShow(value:Boolean) {
+    fun searchShow(value: Boolean) {
         _isSearchViewVisible.value = value
     }
 
@@ -231,19 +228,16 @@ class MainViewModel
             val isUrlExist = interactor.isUrlExist(wordId)
             val nvLocale = isSelected.value?.locales?.get(Language.NIVKH.code)
             val url = "${nvLocale?.audioPath}"
-            val player = isUrlExist?.let { player.initPlayer(application, url, isUrlExist) }
-            if (player == null) {
-                _isButtonVisible.tryEmit(false)
-            }
+            interactor.initPlayer(url, isUrlExist)
+            _isButtonVisible.tryEmit(isUrlExist)
         }
-        _isButtonVisible.tryEmit(true)
     }
 
     fun speakWord() {
-        player.play()
+        interactor.play()
     }
 
     fun destroyPlayer() {
-        player.destroyPlayer()
+        interactor.destroyPlayer()
     }
 }

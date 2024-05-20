@@ -7,6 +7,7 @@ import com.aleksandrgenrikhs.nivkhdictionary.domain.NetworkConnectionChecker
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Word
 import com.aleksandrgenrikhs.nivkhdictionary.domain.WordRepository
 import com.aleksandrgenrikhs.nivkhdictionary.utils.ResultState
+import com.aleksandrgenrikhs.nivkhdictionary.utils.WordMediaPlayer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -19,7 +20,8 @@ class WordRepositoryImpl @Inject constructor(
     private val wordMapper: WordMapper,
     private val networkConnected: NetworkConnectionChecker,
     private val application: Application,
-    private val service: ApiService
+    private val service: ApiService,
+    private val mediaPlayer: WordMediaPlayer
 ) : WordRepository {
 
     companion object {
@@ -94,5 +96,17 @@ class WordRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             false
         }
+    }
+
+    override suspend fun initPlayer(url: String, isUrlExist: Boolean) {
+        mediaPlayer.initPlayer(application, url, isUrlExist)
+    }
+
+    override fun play() {
+        mediaPlayer.play()
+    }
+
+    override fun destroyPlayer() {
+        mediaPlayer.destroyPlayer()
     }
 }

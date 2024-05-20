@@ -23,5 +23,12 @@ class WordInteractor @Inject constructor(
 
     fun isNetWorkConnected() = repository.isNetWorkConnected()
 
-    suspend fun isUrlExist(wordId: Int) =  repository.isUrlExist(wordId)
+    suspend fun isUrlExist(wordId: Int) = repository.isUrlExist(wordId)
+
+    suspend fun initPlayer(url: String, isUrlExist: Boolean) =
+        repository.initPlayer(url, isUrlExist)
+
+    fun play() = repository.play()
+
+    fun destroyPlayer() = repository.destroyPlayer()
 }
