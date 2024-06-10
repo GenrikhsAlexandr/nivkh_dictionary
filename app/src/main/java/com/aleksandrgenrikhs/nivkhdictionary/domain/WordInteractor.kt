@@ -17,13 +17,13 @@ class WordInteractor @Inject constructor(
 
     fun getWords(): Flow<List<Word>> = repository.getWords()
 
-    suspend fun updateWord() = repository.updateWords()
+    suspend fun updateWord(): ResultState<List<Word>> = repository.updateWords()
 
-    suspend fun isFavorite(word: Word) = repository.isFavorite(word)
+    suspend fun isFavorite(word: Word): Boolean = repository.isFavorite(word)
 
-    fun isNetWorkConnected() = repository.isNetWorkConnected()
+    fun isNetWorkConnected():Boolean = repository.isNetWorkConnected()
 
-    suspend fun isUrlExist(wordId: Int) = repository.isUrlExist(wordId)
+    suspend fun isUrlExist(wordId: Int):Boolean = repository.isUrlExist(wordId)
 
     suspend fun initPlayer(url: String, isUrlExist: Boolean) =
         repository.initPlayer(url, isUrlExist)

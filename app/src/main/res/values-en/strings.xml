@@ -15,6 +15,8 @@
     <string name="update_word">Update the word database</string>
     <string name="dialog_update_words_title">Word database update…</string>
     <string name="update_words">The word database has been updated</string>
+    <string name="аudio_is_not_available">Audio is not available, there is no internet connection</string>
+
     <string name="about_text">\t\t
         Dear friends!
         \n\n

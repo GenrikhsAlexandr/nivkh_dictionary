@@ -191,7 +191,7 @@ class MainViewModel
             when (val result = interactor.updateWord()) {
                 is ResultState.Error -> {
                     if (!interactor.isNetWorkConnected()) {
-                        ResultState.Error(R.string.error_message)
+                        toastMessage.tryEmit(R.string.error_message)
                     } else
                         toastMessage.tryEmit(result.message)
                 }
@@ -218,7 +218,7 @@ class MainViewModel
     fun initPlayer() {
         viewModelScope.launch {
             if (!interactor.isNetWorkConnected()) {
-                toastMessage.tryEmit(R.string.error_message)
+                toastMessage.tryEmit(R.string.аudio_is_not_available)
             }
             val wordId = isSelected.value!!.id
             val isUrlExist = interactor.isUrlExist(wordId)
