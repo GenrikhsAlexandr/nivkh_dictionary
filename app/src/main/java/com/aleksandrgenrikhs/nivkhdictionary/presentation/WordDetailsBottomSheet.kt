@@ -15,7 +15,6 @@ import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
 import com.aleksandrgenrikhs.nivkhdictionary.domain.Language
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -63,7 +62,6 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
         binding.favoritesButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.onFavoriteButtonClicked()
-                delay(1)
                 dismiss()
             }
         }
@@ -74,14 +72,12 @@ class WordDetailsBottomSheet : BottomSheetDialogFragment() {
 
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isFavorite.collect { isFavorite ->
-                if (isFavorite) {
+                if (viewModel.isFavorite() == true) {
                     binding.favoritesButton.setIconResource(R.drawable.ic_favorites)
                 } else {
                     binding.favoritesButton.setIconResource(R.drawable.ic_favorites_no_selected)
                 }
             }
-        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isSelected.collect { word ->
                 with(binding) {

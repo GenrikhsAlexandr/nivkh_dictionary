@@ -57,11 +57,7 @@ class MainViewModel
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    val isFavorite: StateFlow<Boolean> = isSelected.map { word ->
-        word?.let {
-            interactor.isFavorite(it)
-        } ?: false
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+   suspend fun isFavorite(): Boolean? = _isSelected.value?.let { interactor.isFavorite(it) }
 
     val favoritesWords: StateFlow<List<WordListItem>> = combine(
         searchRequest,
@@ -168,7 +164,7 @@ class MainViewModel
     suspend fun onFavoriteButtonClicked() {
         val word = isSelected.value
         if (word != null) {
-            if (isFavorite.value) {
+            if (isFavorite() == true) {
                 deleteFavoritesWord(word)
             } else {
                 saveFavoritesWord(word)

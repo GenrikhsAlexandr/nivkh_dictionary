@@ -12,6 +12,7 @@
     <string name="word_not_found">Word not found</string>
     <string name="error_network">No internet connection</string>
     <string name="refresh">Refresh</string>
+    <string name="update_word">Update the word database</string>
     <string name="dialog_update_words_title">Word database update…</string>
     <string name="update_words">The word database has been updated</string>
     <string name="about_text">\t\t

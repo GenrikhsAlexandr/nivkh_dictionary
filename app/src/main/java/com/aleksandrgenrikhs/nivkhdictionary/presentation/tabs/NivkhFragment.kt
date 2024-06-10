@@ -5,14 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentNivkhBinding
 import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
 import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
@@ -66,19 +63,8 @@ class NivkhFragment : Fragment() {
         )
         binding.rvWord.adapter = adapter
         subscribe()
-        refresh()
     }
 
-    private fun refresh() {
-        val swipeRefresh: SwipeRefreshLayout = binding.swipeRefresh
-        swipeRefresh.setColorSchemeResources(R.color.ic_launcher_background)
-        swipeRefresh.setOnRefreshListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-              viewModel.updateWords()
-                swipeRefresh.isRefreshing = false
-            }
-        }
-    }
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.words.collect { words ->
@@ -100,12 +86,8 @@ class NivkhFragment : Fragment() {
                 binding.wordNotFound.isVisible = it
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.toastMessage.collect { error ->
-                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
-            }
-        }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

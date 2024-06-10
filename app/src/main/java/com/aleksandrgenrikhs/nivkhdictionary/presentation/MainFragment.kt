@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast.LENGTH_LONG
+import android.widget.Toast.makeText
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -66,6 +69,11 @@ class MainFragment : Fragment() {
                     true
                 }
 
+                R.id.update_action -> {
+                    viewModel.updateWords()
+                    true
+                }
+
                 else -> false
             }
         }
@@ -113,6 +121,19 @@ class MainFragment : Fragment() {
                 else -> false
             }
         }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            val currentFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is HomeFragment) {
+                requireActivity().finish()
+            } else {
+                parentFragmentManager.commit {
+                    replace<HomeFragment>(R.id.fragmentContainer)
+                    setReorderingAllowed(true)
+                    addToBackStack(null)
+                }
+                binding.bottomNavigation.selectedItemId = R.id.home
+            }
+        }
     }
 
     private fun getQuery() {
@@ -127,10 +148,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    var countToast = 0
 
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -144,6 +162,14 @@ class MainFragment : Fragment() {
                 }
                 binding.layoutSearchView.isVisible = it
                 binding.buttonGroup.isVisible = it
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.toastMessage.collect { message ->
+                makeText(requireContext(), message, LENGTH_LONG).show()
+                println("NivkhViewModel = ${viewModel.hashCode()}")
+                countToast++
+                println("toast = $countToast")
             }
         }
     }
@@ -250,5 +276,10 @@ class MainFragment : Fragment() {
         binding.letter10.setOnClickListener {
             addSymbol10()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

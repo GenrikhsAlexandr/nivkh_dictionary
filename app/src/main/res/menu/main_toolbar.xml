@@ -7,5 +7,10 @@
         android:orderInCategory="1"
         android:title="@string/search"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/update_action"
+        android:contentDescription="@string/update_word"
+        android:title="@string/update_word"
+        app:showAsAction="never" />
 
 </menu>
