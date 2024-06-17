@@ -83,7 +83,7 @@ class MainFragment : Fragment() {
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             return@setOnItemSelectedListener when (menuItem.itemId) {
                 R.id.home -> {
-                    parentFragmentManager.commit {
+                    childFragmentManager.commit {
                         replace<HomeFragment>(R.id.fragmentContainer)
                         setReorderingAllowed(true)
                         addToBackStack(null)
@@ -95,7 +95,7 @@ class MainFragment : Fragment() {
                 }
 
                 R.id.favorite -> {
-                    parentFragmentManager.commit {
+                    childFragmentManager.commit {
                         replace<FavoritesFragment>(R.id.fragmentContainer)
                         setReorderingAllowed(true)
                         addToBackStack(null)
@@ -107,7 +107,7 @@ class MainFragment : Fragment() {
                 }
 
                 R.id.about -> {
-                    parentFragmentManager.commit {
+                    childFragmentManager.commit {
                         replace<AboutFragment>(R.id.fragmentContainer)
                         setReorderingAllowed(true)
                         addToBackStack(null)
@@ -148,8 +148,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    var countToast = 0
-
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isSearchViewVisible.collect {
@@ -167,9 +165,6 @@ class MainFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.toastMessage.collect { message ->
                 makeText(requireContext(), message, LENGTH_LONG).show()
-                println("NivkhViewModel = ${viewModel.hashCode()}")
-                countToast++
-                println("toast = $countToast")
             }
         }
     }

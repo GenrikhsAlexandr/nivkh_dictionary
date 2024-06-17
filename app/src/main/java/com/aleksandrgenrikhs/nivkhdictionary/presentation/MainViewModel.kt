@@ -57,8 +57,6 @@ class MainViewModel
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-   suspend fun isFavorite(): Boolean? = _isSelected.value?.let { interactor.isFavorite(it) }
-
     val favoritesWords: StateFlow<List<WordListItem>> = combine(
         searchRequest,
         interactor.getFavoritesWords()
@@ -91,6 +89,8 @@ class MainViewModel
             getWords()
         }
     }
+
+    suspend fun isFavorite(): Boolean? = _isSelected.value?.let { interactor.isFavorite(it) }
 
     fun getWordsForStart() {
         viewModelScope.launch {
