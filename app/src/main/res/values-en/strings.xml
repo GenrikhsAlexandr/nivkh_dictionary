@@ -17,17 +17,15 @@
     <string name="update_words">The word database has been updated</string>
     <string name="аudio_is_not_available">Audio is not available, there is no internet connection</string>
 
-    <string name="about_text">\t\t
-        Dear friends!
+    <string name="about_text">
+\t\t
+This is a Russian-English-Nivkh audio dictionary. The purpose of releasing the dictionary is to preserve (reproduce) the sound form of the East Sakhalin dialect of the Nivkh language. The Nivkh words were voiced by Vladimir Mikhailovich Sangi - a Nivkh writer, creator of the Nivkh alphabet, Laureate of the State Prize of Russia. The correct pronunciation of words in the Nivkh language will remain the standard of sound for many generations of Nivkhs.
         \n\n
 \t\t
-Before you is a Russian-English-Nivkh audio dictionary. The purpose of creating this dictionary is to preserve (reproduce) the phonetic form of the Eastern Sakhalin dialect of the Nivkh language. Nivkh words were voiced by Vladimir Mikhailovich Sangi, a Nivkh writer and laureate of the State Prize of Russia in literature, a member of the International League for the Protection of Human Rights and Freedoms under the Economic and Social Council of the United Nations. The correct pronunciation of words in the Nivkh language will remain the standard for correct language pronunciation for many generations of Nivkhs.
+We hope that the creation of a talking Nivkh dictionary will help the people in preserving and developing the language, teachers - in organizing classes in the Nivkh language in preschool institutions and general education schools.
         \n\n
-\t\t
-We hope that the creation of a speaking Nivkh dictionary will assist the Nivkh people in preserving and developing their language, as well as educators in organizing classes in the Nivkh language in preschool institutions and general education schools.        \n\n
-\t\t
-The audio dictionary can be used by everyone: those who wish to learn the Nivkh language, linguists and phonetics researchers, as well as foreign specialists.
-</string>
+        \t\t
+The audio dictionary will be useful to everyone: those who want to learn the Nivkh language; scientists engaged in linguistic and phonetic research; foreign specialists.    </string>
     <string name="Russia">RU</string>
     <string name="English">EN</string>
     <string name="nothingFound">Nothing found</string>
