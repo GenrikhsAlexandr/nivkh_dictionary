@@ -65,7 +65,7 @@ class MainFragment : Fragment() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             return@setOnMenuItemClickListener when (item.itemId) {
                 R.id.search -> {
-                    viewModel.searchShow(true)
+                    viewModel.searchVisible(true)
                     true
                 }
 
@@ -90,7 +90,6 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.app_name)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    viewModel.searchShow(false)
                     true
                 }
 
@@ -102,7 +101,6 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.favorites)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = true
-                    viewModel.searchShow(false)
                     true
                 }
 
@@ -114,7 +112,6 @@ class MainFragment : Fragment() {
                         binding.toolbar.title = getString(R.string.about)
                     }
                     binding.toolbar.menu.findItem(R.id.search)?.isVisible = false
-                    viewModel.searchShow(false)
                     true
                 }
 
@@ -122,16 +119,18 @@ class MainFragment : Fragment() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            val currentFragment = parentFragmentManager.findFragmentById(R.id.fragmentContainer)
+            val currentFragment = childFragmentManager.findFragmentById(R.id.fragmentContainer)
             if (currentFragment is HomeFragment) {
                 requireActivity().finish()
             } else {
-                parentFragmentManager.commit {
+                childFragmentManager.commit {
                     replace<HomeFragment>(R.id.fragmentContainer)
                     setReorderingAllowed(true)
                     addToBackStack(null)
                 }
                 binding.bottomNavigation.selectedItemId = R.id.home
+                viewModel.searchVisible(false)
+
             }
         }
     }
@@ -144,7 +143,7 @@ class MainFragment : Fragment() {
 
     private fun onBackIconClick() {
         binding.iconBack.setOnClickListener {
-            viewModel.searchShow(false)
+            viewModel.searchVisible(false)
         }
     }
 
@@ -276,5 +275,6 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        viewModel.searchVisible(false)
     }
 }

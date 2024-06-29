@@ -79,6 +79,6 @@ class FavoritesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewModel.searchDestroy()
+        viewModel.searchVisible(false)
     }
 }

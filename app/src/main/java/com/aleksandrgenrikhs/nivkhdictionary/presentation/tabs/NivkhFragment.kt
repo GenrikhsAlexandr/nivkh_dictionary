@@ -87,9 +87,13 @@ class NivkhFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.searchVisible(false)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewModel.searchDestroy()
     }
 }
