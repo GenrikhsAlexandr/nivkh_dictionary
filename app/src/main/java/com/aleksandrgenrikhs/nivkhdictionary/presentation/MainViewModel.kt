@@ -207,12 +207,8 @@ class MainViewModel
         _isSelected.value = word
     }
 
-    fun searchShow(value: Boolean) {
+    fun searchVisible(value: Boolean) {
         _isSearchViewVisible.value = value
-    }
-
-    fun searchDestroy() {
-        _isSearchViewVisible.value = false
     }
 
     fun initPlayer() {
@@ -235,5 +231,10 @@ class MainViewModel
 
     fun destroyPlayer() {
         interactor.destroyPlayer()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        searchVisible(false)
     }
 }
