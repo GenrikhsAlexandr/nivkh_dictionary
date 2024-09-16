@@ -19,14 +19,14 @@ class WordMapper @Inject constructor() {
                 put(
                     Language.NIVKH.code, LocaleData(
                         locale = Language.NIVKH,
-                        value = wordDto.nv ?: return null
+                        value = wordDto.nv?.trim() ?: return null
                     )
                 )
                 wordDto.ru?.let {
                     put(
                         Language.RUSSIAN.code, LocaleData(
                             locale = Language.RUSSIAN,
-                            value = it
+                            value = it.trim()
                         )
                     )
                 }
@@ -34,7 +34,7 @@ class WordMapper @Inject constructor() {
                     put(
                         Language.ENGLISH.code, LocaleData(
                             locale = Language.ENGLISH,
-                            value = it
+                            value = it.trim()
                         )
                     )
                 }
