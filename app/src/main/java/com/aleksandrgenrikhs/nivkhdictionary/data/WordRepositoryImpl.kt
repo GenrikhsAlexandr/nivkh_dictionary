@@ -47,6 +47,7 @@ class WordRepositoryImpl @Inject constructor(
                 val entities = response.map {
                     wordMapper.mapWordToAllWordsDb(it)
                 }
+                wordDao.deleteAllWords()
                 wordDao.insertWords(entities)
                 return@withContext ResultState.Success(response)
             } catch (e: Exception) {

@@ -25,6 +25,9 @@ interface WordDao {
     @Query("SELECT * FROM word WHERE id = :wordId")
     suspend fun getWordById(wordId: Int): FavoriteWordEntity?
 
+    @Query("DELETE FROM words")
+    suspend fun deleteAllWords()
+
     @Delete
     suspend fun deleteWord(word: FavoriteWordEntity)
 }
