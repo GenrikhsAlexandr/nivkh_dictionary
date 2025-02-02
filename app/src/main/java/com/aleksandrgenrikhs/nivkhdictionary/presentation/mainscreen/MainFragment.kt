@@ -1,4 +1,4 @@
-package com.aleksandrgenrikhs.nivkhdictionary.presentation
+package com.aleksandrgenrikhs.nivkhdictionary.presentation.mainscreen
 
 import android.content.Context
 import android.os.Bundle
@@ -6,41 +6,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast.LENGTH_LONG
-import android.widget.Toast.makeText
 import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.aleksandrgenrikhs.nivkhdictionary.R
 import com.aleksandrgenrikhs.nivkhdictionary.databinding.FragmentMainBinding
-import com.aleksandrgenrikhs.nivkhdictionary.di.ComponentProvider
-import com.aleksandrgenrikhs.nivkhdictionary.di.viewModel.MainViewModelFactory
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.AboutFragment
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.HomeFragment
+import com.aleksandrgenrikhs.nivkhdictionary.presentation.favoritescreen.FavoritesFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
     companion object {
         fun newInstance() = MainFragment()
     }
 
-    @Inject
-    lateinit var viewModelFactory: MainViewModelFactory
-    private val viewModel: MainViewModel by activityViewModels { viewModelFactory }
+    val viewModel:MainViewModel by viewModels()
+
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding get() = _binding!!
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (requireActivity().application as ComponentProvider).provideComponent()
-            .inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -159,11 +153,6 @@ class MainFragment : Fragment() {
                 }
                 binding.layoutSearchView.isVisible = it
                 binding.buttonGroup.isVisible = it
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.toastMessage.collect { message ->
-                makeText(requireContext(), message, LENGTH_LONG).show()
             }
         }
     }

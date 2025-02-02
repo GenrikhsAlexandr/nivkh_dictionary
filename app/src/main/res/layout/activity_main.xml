@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/ic_launcher_background"
     android:gravity="center"
-    tools:context=".presentation.MainActivity">
+    tools:context=".presentation.mainscreen.MainActivity">
 
     <LinearLayout
         android:id="@+id/errorLayout"
