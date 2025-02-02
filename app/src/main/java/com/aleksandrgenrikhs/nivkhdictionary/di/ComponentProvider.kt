@@ -1,5 +1,5 @@
 package com.aleksandrgenrikhs.nivkhdictionary.di
 
-interface ComponentProvider {
-    fun provideComponent(): ApplicationComponent
-}
+//interface ComponentProvider {
+//    fun provideComponent(): ApplicationComponent
+//}

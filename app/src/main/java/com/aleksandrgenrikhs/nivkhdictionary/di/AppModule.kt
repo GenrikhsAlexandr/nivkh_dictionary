@@ -11,13 +11,12 @@ import com.aleksandrgenrikhs.nivkhdictionary.utils.WordMediaPlayer
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Module(
-    includes = [
-        NetworkModule::class,
-    ]
-)
+@Module
+@InstallIn(SingletonComponent::class)
 interface AppModule {
     @Binds
     @Singleton
